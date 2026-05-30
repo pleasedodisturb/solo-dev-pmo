@@ -1,0 +1,46 @@
+# <project-name>
+
+<one-line purpose: what this project is for>
+
+See `~/.claude/CLAUDE.md` for global conventions (git workflow, commit discipline, PM tool, testing).
+
+## Stack
+
+- <language + version>
+- <key framework>
+- <DB or storage>
+- <test runner>
+- <lint / format>
+
+## Key commands
+
+- `<cmd>` — <what it does>
+- `<cmd>` — <what it does>
+- `<cmd>` — <what it does>
+
+## Conventions
+
+- <project-specific rule that overrides or extends global>
+- <another>
+
+## Architecture notes
+
+- <the 3-5 things an agent must know every time it touches this repo>
+- <e.g., "All DB writes go through services/ layer; never instantiate models in routes.">
+- <e.g., "Authentication is via JWT; admin routes bypass in dev — NEVER deploy with DEBUG=true.">
+
+## Gotchas
+
+- <the specific landmines: bugs, edge cases, version pins, etc.>
+- <e.g., "Alembic autogenerate misses enum changes; manual ops required.">
+
+## Project-specific MCP / tooling
+
+- <any MCP enabled per-project via .mcp.json>
+- <any project-specific agents in .claude/agents/>
+- <env vars required>
+
+## Testing
+
+- Run: `<test command>`
+- New code requires tests; see `~/.claude/CLAUDE.md` § Testing for global rule

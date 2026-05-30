@@ -1,0 +1,76 @@
+# ADHD-aware design
+
+> **The rule:** design every layer of the stack around affordances rather than sustained discipline. Solutions that require you to remember to do things daily will fail.
+
+This is the axis that shapes everything else. It's not about adopting "ADHD apps." It's about treating ADHD-style failure modes — torrents of unchunked ideas, lost context across project switches, inability to maintain weekly rituals on willpower alone — as **stack design constraints**.
+
+If you don't have ADHD, the same constraints still help. Neurotypical engineers running solo also forget to do things. The system that holds for ADHD holds for everyone.
+
+## The five required affordances
+
+A solo-engineering stack that meets this constraint has these five mechanisms. If any are missing, the system silently fails.
+
+### 1. Single source of truth
+
+One inbox. One capture surface. Never "remember to write it down in X."
+
+If you have to choose where to put a thought, you'll lose half of them. Pick one — usually your PM tool's Triage state (see [Chapter 01](../01-linear-as-load-bearing-pm/)) — and route everything there. Other surfaces (Slack channels, ntfy topics, voice memos) flow *into* the one inbox; they don't *compete* with it.
+
+See also: [Single source of truth](./single-source-of-truth.md).
+
+### 2. Lossless capture
+
+The friction between "I had a thought" and "the thought is recorded" must be near zero.
+
+Concrete: a CLI command (`<your-pm>-capture` or similar) that takes a string, files it to the inbox, and returns control in < 3 seconds. No app to open. No fields to fill. The capture is messy on purpose; you triage it tomorrow.
+
+Better to capture every fleeting idea into a messy inbox than to lose them trying to file perfectly.
+
+### 3. Structured chunking by default
+
+Big ideas don't sit as big tickets.
+
+Your PM tool must encode "this is too big" as a stop signal — see [exponential estimates](../01-linear-as-load-bearing-pm/estimates-exponential.md). When you (or an agent) try to commit a multi-day chunk to a cycle, the system pushes back and forces a breakdown.
+
+The naive "I'll break it down later" plan fails because by the time later arrives, the context has decayed.
+
+### 4. Ritual triggers, not ritual willpower
+
+If something must happen on Monday or Friday — Monday planning, Friday retro — it fires from a script, a launchd job, a calendar event, or an agent. Not from you remembering.
+
+See [Chapter 04 — Rituals and triggers](../04-rituals-and-triggers/). The pattern: `launchd` plist + ntfy push + open PM tool view at the scheduled moment. Missing the ritual is impossible because the trigger fires whether you're paying attention or not.
+
+**Anti-pattern:** streak tracking / gamification. ADHD + streaks = guilt spiral on first miss. Counterproductive. Don't track streaks; track *whether the trigger fired*, which is separable from whether you did the thing.
+
+### 5. WIP limits enforced by the system
+
+"Try to focus on fewer things" is not a strategy. Cap *started* projects at N (typical: 3). When you try to start an Nth+1, the system surfaces the cap as a hard constraint — you have to explicitly pause or cancel something else first.
+
+See [WIP cap with continuous-area exemption](../01-linear-as-load-bearing-pm/wip-cap-with-continuous-areas.md). Important nuance: continuous-area projects (ongoing maintenance — Plex stack, Mac setup, awesome-list curation) are exempt from the cap. The cap is on *push* work.
+
+## What this rules out
+
+- **Manual review rituals** — "every Monday I check the backlog." No. The system surfaces what needs review.
+- **Memory-based capture** — "I'll add it to the ticket later." No. Capture now, triage later.
+- **Discipline-based scheduling** — "I'll just stay focused this week." No. The cap on cycle WIP enforces focus.
+- **Self-improvement framing** — "I should get better at X." No. Build a system that doesn't depend on you being better.
+
+## What this rules in
+
+- **Stop signals from the tool** — Exponential estimates with 16 as a "break this up" sign. WIP caps that block instead of warn. Triage as the *only* inbox.
+- **Push notifications for triggers** — ntfy, system notifications, agent-posted comments.
+- **Snooze as a deliberate hibernation marker** — see [snooze-as-hibernation](../01-linear-as-load-bearing-pm/snooze-as-hibernation.md). Backlog items that aren't actionable now go to sleep; the tool wakes them at the right time.
+- **Agent-mediated handoff** — when you switch projects, the agent re-loads context for you. Not the reverse.
+
+## Origin
+
+This principle was named explicitly during a 2026 design conversation as the failure mode of every prior PM/organization attempt by an ADHD solo developer. The exact framing: *"adhding all over the place... torrents of ideas with no chunking, losing context across tmux panes, inability to maintain Monday planning + Friday retro rituals, no handoff structure between parallel projects."*
+
+Every chapter in this playbook is downstream of this principle. When in doubt, ask: *"does this require the human to remember to do something?"* If yes, redesign.
+
+## Related
+
+- [Single source of truth](./single-source-of-truth.md) — the inbox part of the rule
+- [Chapter 01 — Linear as load-bearing PM](../01-linear-as-load-bearing-pm/) — the tool that implements most affordances
+- [Chapter 04 — Rituals and triggers](../04-rituals-and-triggers/) — the ritual-trigger part
+- Adjacent reading: [`XargsUK/awesome-adhd`](https://github.com/XargsUK/awesome-adhd), [Leantime — Open Source PM for ADHD](https://leantime.io/open-source-project-management-for-adhd-why-we-built-leantime-for-neurodivergent-productivity/)

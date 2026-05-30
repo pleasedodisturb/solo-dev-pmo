@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Example launchd plist for the Monday planning ritual.
+
+  Install:
+    cp examples/launchd-monday-plan.plist ~/Library/LaunchAgents/com.yourname.monday-plan.plist
+    launchctl load ~/Library/LaunchAgents/com.yourname.monday-plan.plist
+
+  Test:
+    launchctl start com.yourname.monday-plan
+
+  Edit:
+    launchctl unload ~/Library/LaunchAgents/com.yourname.monday-plan.plist
+    # edit the file
+    launchctl load ~/Library/LaunchAgents/com.yourname.monday-plan.plist
+
+  Inspect:
+    launchctl list | grep monday-plan
+    launchctl print user/$(id -u)/com.yourname.monday-plan
+-->
+<plist version="1.0">
+<dict>
+
+  <!-- Unique identifier -->
+  <key>Label</key>
+  <string>com.yourname.monday-plan</string>
+
+  <!-- The script to run.
+       Use ABSOLUTE PATH; launchd does not reliably honor $PATH. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/YOU/.local/bin/monday-plan</string>
+  </array>
+
+  <!-- Fire every Monday at 09:00.
+       Weekday: 0=Sun, 1=Mon, ..., 6=Sat -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Weekday</key><integer>1</integer>
+    <key>Hour</key><integer>9</integer>
+    <key>Minute</key><integer>0</integer>
+  </dict>
+
+  <!-- Run once at load too, useful for testing -->
+  <!-- <key>RunAtLoad</key><true/> -->
+
+  <!-- Capture stdout/stderr for debugging -->
+  <key>StandardOutPath</key>
+  <string>/tmp/monday-plan.out</string>
+
+  <key>StandardErrorPath</key>
+  <string>/tmp/monday-plan.err</string>
+
+  <!-- Set a minimal PATH; launchd does not source your shell rc -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    <!-- DO NOT put secrets here; plist is plaintext.
+         Have the script load secrets from your password manager. -->
+  </dict>
+
+</dict>
+</plist>

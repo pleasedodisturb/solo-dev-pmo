@@ -1,0 +1,141 @@
+# Global Claude Code Instructions (example)
+
+> A Layer-1 `~/.claude/CLAUDE.md` template. Adapt to your stack. KEEP UNDER 200 LINES.
+
+## Memory Architecture (4 Layers)
+
+| Layer | File | Scope | Synced via |
+|---|---|---|---|
+| 1. Global rules | `~/.claude/CLAUDE.md` | All projects | Syncthing / dotfiles |
+| 2. Project rules | `<repo>/CLAUDE.md` | Per-project | Git |
+| 3. Auto-memory | `~/.claude/projects/.../memory/` | Per-project state | Syncthing |
+| 4. MCP memory | `~/.mcp_memory/memory.db` | Cross-project | Syncthing |
+
+Each layer has a job. See `~/.claude/docs/memory-architecture.md` for boundary rules.
+
+## Secrets
+
+All secrets in your password manager (`rbw` / `op` / `pass` / `keepassxc`). Zero plaintext.
+- Tokens exposed to environment at session start via `.zshrc`
+- Never commit `.env` files; use `.env.example` (committed) + `.env` (gitignored)
+- Rotate immediately if any secret leaks. See `~/.claude/docs/secrets-recovery.md`.
+
+## Testing
+
+- **Every piece of code MUST have unit tests.** No exceptions.
+- Write tests alongside the code, not after.
+- Tests live next to code or in `tests/`, per project's existing convention.
+- Run tests after writing them.
+- Flag and offer to write tests for existing untested code.
+
+## PM Tool
+
+- All work serves a PM ticket. Find or create before starting.
+- CLI > MCP locally; never the PM-tool MCP plugin in local sessions.
+- Every commit references a ticket; prefix subject with ticket ID.
+- See `~/.claude/docs/<pm-tool>-io-rules.md` for I/O patterns.
+- See `~/.claude/docs/<pm-tool>-ticket-standard.md` for ticket quality.
+- See `~/.claude/docs/never-defer-tickets.md` for the file-now rule.
+
+## Tools
+
+- `gh` for GitHub operations (authenticated)
+- Built-in WebSearch for web search; WebFetch for read-only page extraction
+- See `~/.claude/docs/mcp-routing.md` for which MCP for which task
+- See `~/.claude/docs/browser-tools.md` for browser-tool selection
+
+## MCP Servers
+
+- Master list at `~/.claude/MCP_REGISTRY.md`
+- Update registry when MCPs are added, removed, or toggled
+- Never use browser MCPs on banking / credential pages
+
+## Git Workflow (Non-Negotiable)
+
+- NEVER commit directly to `main` / `master`
+- NEVER force-push to `main` / `master`
+- Branch naming: `<ticket-id>/<short-description>`
+- PR for every change
+- CI/CD passes before merge
+- See `~/.claude/docs/pr-review-standard.md` for code+security review
+- See `~/.claude/docs/oss-contribution-workflow.md` for OSS contributions
+
+## Session Discipline
+
+- Commit after every meaningful change — don't batch
+- Push after committing on non-main branches
+- Commit messages: subject (ticket-prefixed) + body (what + why)
+- After commit, update Layer 3 / Layer 4 memory if state changed materially
+- See `~/.claude/docs/wrap-and-resume.md` for `/wrap` and `/resume`
+
+## CLAUDE.md Discipline
+
+- Keep this file under 200 lines
+- When adding rules, outsource details to `~/.claude/docs/<rule-name>.md`
+- Only rule trigger + file pointer inline
+
+## Repo Bootstrap
+
+- Every own repo MUST have a `CLAUDE.md` at root
+- Never commit local-only files (CLAUDE.md, .planning/, .claude/) to other people's repos
+- See `~/.claude/docs/repo-bootstrap.md` for the template and post-rename checklist
+
+## Quick Commands
+
+"push" = full sequence: review diff → stage → commit (ticket + body + trailer) → push → update memory. See `~/.claude/docs/quick-commands.md`.
+
+## Output
+
+- Absolute paths when referencing files
+- Paste-friendly commands: `;` between commands, `\` line continuations
+- Concise. Don't summarize what just happened; user can read the diff.
+
+## File Organization
+
+- Never create scripts in `~/`
+- Use `~/Projects/<category>/<repo>` per layout
+- See `~/Projects/<meta-pm-repo>/conventions/naming.md`
+
+## Safety
+
+- Ask before any bulk or destructive operation
+- Never commit secrets, .env files, or credentials
+- Confirm before modifying canonical data files (CSVs, databases, configs)
+- Use `trash` instead of `rm` for file deletion (recoverable)
+
+## Lessons Learned Discipline
+
+- When you make a mistake, save it as a `feedback_<topic>.md` memory immediately
+- If broadly applicable, add to relevant CLAUDE.md
+- Never make the same mistake twice — check feedback memories before repeating patterns
+
+## Gotchas
+
+- Hooks fail silently if malformed — test after adding
+- Project renames break many things (venvs, hooks, MCP configs, symlinks). See `~/.claude/docs/repo-bootstrap.md` § Post-Rename Cleanup.
+- Git SSH signing uses file-path, not `key::` literal — survives agent socket changes
+
+## Who I Am
+
+[1-2 sentences. Role, primary work, AI-collaboration mode.]
+
+## Context Preservation
+
+Narratives are state. If user explains a situation (dispute, relationship, strategy), save it to Layer 3 immediately:
+1. Write/update Layer 3 memory with full narrative
+2. Store to Layer 4 with relevant tags
+3. For cloud/remote sessions: commit context docs (can't write Layer 3)
+
+Don't filter by "project state change" — narratives ARE state.
+
+## Tool routing precedence
+
+| Need | First | Fallback |
+|---|---|---|
+| Library docs | Context7 / Dash | WebSearch |
+| Read a public page | WebFetch | Playwright MCP |
+| Interact with web app | Playwright MCP | BrowserMCP (if auth) |
+| PM tool I/O (local) | CLI | GraphQL |
+| Cross-project context | memory MCP | grep Layer 3 |
+
+Full routing in `~/.claude/docs/mcp-routing.md`.

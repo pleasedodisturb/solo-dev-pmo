@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# pre-push hook — block pushes containing commits without "Reviewed-by:" trailer.
+#
+# Install globally:
+#   mkdir -p ~/.claude/git-hooks
+#   cp examples/pre-push-review-hook ~/.claude/git-hooks/pre-push
+#   chmod +x ~/.claude/git-hooks/pre-push
+#   git config --global core.hooksPath ~/.claude/git-hooks
+#
+# Emergency override: PRE_PUSH_REVIEW_OVERRIDE=1 git push <args>
+
+set -euo pipefail
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  # Compute range of commits being pushed
+  if [ "$remote_sha" = "0000000000000000000000000000000000000000" ]; then
+    # New branch; check all commits not in main
+    range="origin/main..$local_sha"
+  else
+    range="$remote_sha..$local_sha"
+  fi
+
+  # Emergency override
+  if [ "${PRE_PUSH_REVIEW_OVERRIDE:-}" = "1" ]; then
+    echo "pre-push: Skipping review trailer check (PRE_PUSH_REVIEW_OVERRIDE=1)" >&2
+    continue
+  fi
+
+  # Check each commit in the range
+  for sha in $(git rev-list "$range" 2>/dev/null || true); do
+    if ! git log -1 --format=%B "$sha" | grep -q "Reviewed-by:"; then
+      short=$(git log -1 --format=%h "$sha")
+      subject=$(git log -1 --format=%s "$sha")
+      echo "pre-push: Commit $short '$subject' lacks 'Reviewed-by:' trailer" >&2
+      echo "pre-push: Review the diff, then amend with:" >&2
+      echo "  git commit --amend --no-edit --trailer 'Reviewed-by: <reviewer> (code+security)'" >&2
+      echo "pre-push: To bypass for this push: PRE_PUSH_REVIEW_OVERRIDE=1 git push" >&2
+      exit 1
+    fi
+  done
+done
+
+exit 0

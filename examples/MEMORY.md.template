@@ -1,0 +1,45 @@
+# <project-name> — Auto-memory Index
+
+> Template for a Layer 3 `MEMORY.md` index file.
+> Lives at `~/.claude/projects/<encoded-path>/memory/MEMORY.md`.
+> Keep this index under 150 lines. Memory content goes in sibling files.
+
+## Where we are
+
+<2-3 sentence current state. What's in progress, what's blocked.>
+
+## Index
+
+### Project context
+- [Project overview](project_overview.md) — what this project IS
+- [Active priorities](project_priorities.md) — what matters now and why
+
+### Feedback (lessons learned)
+- [<topic>](feedback_<topic>.md) — <one-line summary>
+- [<topic>](feedback_<topic>.md) — <one-line summary>
+
+### Decisions / state
+- [<decision>](project_<topic>.md) — <one-line>
+
+### Reference
+- [<resource>](reference_<topic>.md) — <one-line>
+
+## Recent activity
+<Newest 3-5 sessions. Each line: date + slug + status.>
+
+- <date> — <session slug> — <status>
+
+## Open questions
+- <question 1>
+- <question 2>
+
+## How to use this index
+
+- Always-loaded into context at session start.
+- Each link is a memory file with frontmatter `type: user / feedback / project / reference`.
+- Link to siblings with `[[name]]` syntax — orphan links are TODOs.
+- Keep this index concise. Detail goes in the linked files.
+
+## Last full audit
+
+<date> — <slug>. Outdated memories rotated or deleted.
