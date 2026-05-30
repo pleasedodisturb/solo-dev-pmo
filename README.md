@@ -40,14 +40,14 @@ If those don't describe you, this probably isn't for you.
 |---|---------|--------|----------------|
 | 00 | [Principles](./00-principles/) | ✓ | ADHD-aware design, 4-layer memory, single source of truth, calendar-neutrality |
 | 01 | [Linear as load-bearing PM](./01-linear-as-load-bearing-pm/) | ✓ **fully fleshed** | Cycles, Triage, Estimates, Snooze, WIP, Ticket standard, I/O rules, Never-defer |
-| 02 | [Filesystem conventions](./02-filesystem-conventions/) | skeleton | Layout B subfolders, slug rules, Linear↔GitHub binding, worktree placement |
-| 03 | [Claude Code as operator](./03-claude-code-as-operator/) | skeleton | Memory architecture, CLAUDE.md template, skills/hooks, MCP routing, browser tools, agent rules |
-| 04 | [Rituals and triggers](./04-rituals-and-triggers/) | skeleton | launchd over cron, ntfy, plaintext time layer, Monday plan / Friday retro |
-| 05 | [Secrets and secure defaults](./05-secrets-and-secure-defaults/) | skeleton | Secrets via password manager CLI, SSH agent, never-commit-secrets, signing |
-| 06 | [Session discipline](./06-session-discipline/) | skeleton | Commit cadence, PR review standard, audit + conventions pattern, /wrap and /resume |
-| 07 | [Cheatsheets and living docs](./07-cheatsheets-and-living-docs/) | skeleton | `cheat <topic>` system, cheatsheet maintenance discipline |
+| 02 | [Filesystem conventions](./02-filesystem-conventions/) | ✓ | Layout B subfolders, slug rules, Linear↔GitHub binding, worktree placement |
+| 03 | [Claude Code as operator](./03-claude-code-as-operator/) | ✓ | Memory architecture, CLAUDE.md template, skills/hooks, MCP routing, browser tools, agent rules |
+| 04 | [Rituals and triggers](./04-rituals-and-triggers/) | ✓ | launchd over cron, ntfy, plaintext time layer, Monday plan / Friday retro |
+| 05 | [Secrets and secure defaults](./05-secrets-and-secure-defaults/) | ✓ | Secrets via password manager CLI, SSH agent, never-commit-secrets, signing |
+| 06 | [Session discipline](./06-session-discipline/) | ✓ | Commit cadence, PR review standard, audit + conventions pattern, /wrap and /resume |
+| 07 | [Cheatsheets and living docs](./07-cheatsheets-and-living-docs/) | ✓ | `cheat <topic>` system, cheatsheet maintenance discipline |
 
-Skeletons have scope outlines but unwritten bodies. Open issues / PRs welcome.
+Every chapter is substantive (README + sub-topics + field-tested gotchas + innovative patterns). Open issues / PRs welcome for new chapters or depth-expansion of existing ones.
 
 ## Positioning
 
