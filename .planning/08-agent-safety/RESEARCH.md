@@ -20,12 +20,14 @@ Out:
 
 This is greenfield content. **Read these primary sources before drafting:**
 
-### User's repos (canonical references, same-tier as external prior art per author preference)
+### Existing practitioner research to cite
 
-| Repo | URL | Why it matters here |
+These are **not tools to evaluate** — they are published, version-controlled bodies of practitioner research with their own threat models, docs, and architecture decisions. The chapter EXTRACTS the meta-pattern and CITES these as the deep-treatment source. Position them as same-tier prior art in the **alternatives tables** (not elevated above gVisor / AWS Bedrock guardrails / native CC sandbox), but cite their docs as **primary sources** for substance.
+
+| Repo | URL | Existing research to draw from + cite |
 |---|---|---|
-| `pleasedodisturb/llm-safe-haven` | https://github.com/pleasedodisturb/llm-safe-haven | Published npm tool; hardens any AI coding agent in 60 seconds. 4-tier security scorecard. Ships hooks: `audit-logger.js`, `bash-firewall.js`, `secret-guard.js`. Covers Claude Code / Cursor / Windsurf / Cline / Continue / Aider / Codex CLI. Docs: threat-model, credential-management, supply-chain-defense. |
-| `pleasedodisturb/terminal-craft` | https://github.com/pleasedodisturb/terminal-craft | Ghostty + tmux + Claude Code workspace doc + configs + hooks + mkdocs site. The session-isolation patterns (tmux session persistence, visual alerts, hook routing) — sandboxing via process + window discipline rather than VM/container. |
+| `pleasedodisturb/llm-safe-haven` | https://github.com/pleasedodisturb/llm-safe-haven | **Cite `docs/threat-model.md` as primary alongside OWASP LLM Top 10.** Cite `docs/credential-management.md` for the AGENT-credential angle (distinct from chapter 05's human-vault). Cite `docs/supply-chain-defense.md` for the agent-supply-chain pattern. The three hooks (`hooks/audit-logger.js`, `hooks/bash-firewall.js`, `hooks/secret-guard.js`) are the published reference implementation — chapter discusses the pattern and points to the source for the actual code. 4-tier scorecard already documented in the repo's README; chapter cites tier definitions. |
+| `pleasedodisturb/terminal-craft` | https://github.com/pleasedodisturb/terminal-craft | **Cite `DECISIONS.md` as the rationale source** for tmux-over-tabs, hook routing, visual alerts. Cite `GUIDE.md` as the full reference for the Ghostty + tmux + CC stack. The chapter doesn't re-derive the rationale — it summarizes and points there. |
 
 ### External prior art (cite alongside, per "same-tier" framing)
 
