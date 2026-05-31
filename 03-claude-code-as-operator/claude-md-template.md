@@ -137,6 +137,34 @@ Some repos enable per-project MCP via `.mcp.json`. Some require specific environ
 
 If any of those exist, list here so the agent knows where to look.
 
+## Keep it small — now vendor-confirmed
+
+Anthropic's guidance matches the playbook's cap: "**target under 200 lines per CLAUDE.md file. Longer files consume more context and reduce adherence.**"[¹] Two 2026 nuances: (1) CLAUDE.md loads in **full** regardless of length — `@import`ed files still enter context at launch, so imports aid organization, not cost. (2) For file-specific guidance, use **path-scoped rules** (`.claude/rules/*.md` with `paths:` frontmatter), which load only when a matching file is touched — the right home for "rules the agent needs only when editing `migrations/`."[¹] Move multi-step procedures to [skills](./skills-and-hooks.md), not into CLAUDE.md.
+
+## Translating to other tools (Q03.22)
+
+The same project-rules file under each tool's name (full matrix in [agent-platform-portability](./agent-platform-portability.md)):
+
+```text
+Cursor   → .cursor/rules/stack.mdc      Aider → CONVENTIONS.md (load via .aider.conf.yml: read: CONVENTIONS.md)
+Cline    → .clinerules/                 Continue → .continue/rules/stack.md
+Codex / Copilot → AGENTS.md
+```
+
+Cursor uses MDC (markdown + frontmatter); the rest are plain markdown like CLAUDE.md. Cursor example:
+
+```markdown
+---
+description: Project stack and conventions
+globs: ["src/**/*.py"]
+alwaysApply: true
+---
+- Python 3.12 via uv; FastAPI; SQLAlchemy 2.x async. All async endpoints.
+- `uv run pytest` for tests; never instantiate AsyncSession inline.
+```
+
+**Portability move:** if you switch tools, keep one `AGENTS.md` as source of truth (now a Linux-Foundation-stewarded standard read by Codex, Cursor, Copilot, Aider, and 20+ tools) and have `CLAUDE.md` reference it (`See @AGENTS.md`) rather than maintaining two.[²]
+
 ## For repos you don't own (OSS contributions, vendored deps)
 
 **Don't commit a CLAUDE.md.** Two reasons:
@@ -212,4 +240,10 @@ Bootstraps from "empty project" to "CLAUDE.md present" in 30 seconds. The Gotcha
 
 - [Chapter 02 — Slug rules](../02-filesystem-conventions/slug-rules.md) — project names in CLAUDE.md
 - [Memory architecture](./memory-architecture.md) — Layer 2 in context
+- [Agent-platform portability](./agent-platform-portability.md) — rules files in other tools
 - [Chapter 06 — Audit pattern](../06-session-discipline/audit-and-conventions-pattern.md) — convention files vs. CLAUDE.md
+
+---
+
+[¹]: https://code.claude.com/docs/en/memory — accessed 2026-05-31
+[²]: https://agents.md/ ; https://openai.com/index/agentic-ai-foundation/ — accessed 2026-05-31
