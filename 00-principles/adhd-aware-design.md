@@ -64,6 +64,22 @@ See [WIP cap with continuous-area exemption](../01-linear-as-load-bearing-pm/wip
 - **Snooze as a deliberate hibernation marker** — see [snooze-as-hibernation](../01-linear-as-load-bearing-pm/snooze-as-hibernation.md). Backlog items that aren't actionable now go to sleep; the tool wakes them at the right time.
 - **Agent-mediated handoff** — when you switch projects, the agent re-loads context for you. Not the reverse.
 
+## Alternatives
+
+Other frameworks aimed at the same problem. We borrow from several; we reject the ones whose *upkeep is itself a discipline ritual*.
+
+| Framework | What it is | Why we didn't adopt it wholesale |
+|---|---|---|
+| **GTD** ([Getting Things Done](https://gettingthingsdone.com/)) | capture everything, process into next-actions | strong on lossless capture (we borrow it) — but the weekly review is a willpower ritual; we replace it with system-fired triggers ([Chapter 04](../04-rituals-and-triggers/)) |
+| **[Building a Second Brain](https://www.buildingasecondbrain.com/) / PARA** | manual folder taxonomy (Projects/Areas/Resources/Archives) | manual filing is exactly the discipline tax we remove; the memory layers + one inbox auto-route instead |
+| **[Bullet Journal](https://bulletjournal.com/)** | analog notebook with daily/monthly "migration" | migration is a daily ritual and analog has no triggers or push — fails the "requires remembering" test |
+| **[Habitica](https://habitica.com/) / streak gamification** | RPG/streak rewards for habits | streaks add a failure mode (the broken streak); rejected — see [evidence \[C\]](./evidence-and-citations.md) |
+| **Body doubling / accountability partners** | another person present to anchor focus | social-synchronous; doesn't fit solo-async work with agents. Useful adjunct, not a system. |
+| **[Leantime](https://leantime.io/)** | open-source PM tool built for neurodivergence | a *tool you adopt*; this playbook is the recipe for integrating tools you already run. Complementary, not competing. |
+| **EF scaffolding / "point of performance"** (Barkley) | externalize cues at the moment of need | this is our *root*, not an alternative — see [evidence \[A\]](./evidence-and-citations.md) |
+
+**Why "affordances, not discipline" wins for this stack:** every other framework still has a human-maintained step — a review, a migration, a filing decision, a streak to protect. Each of those is a place the system fails the day you forget. The differentiator here is that the maintenance step is pushed onto the system (a trigger fires, the inbox auto-routes, the cap blocks), so there's nothing left to *remember to do*. We keep the good parts (GTD's capture, Barkley's externalization) and drop the rituals.
+
 ## Origin
 
 This principle was named explicitly during a 2026 design conversation as the failure mode of every prior PM/organization attempt by an ADHD solo developer. The exact framing: *"adhding all over the place... torrents of ideas with no chunking, losing context across tmux panes, inability to maintain Monday planning + Friday retro rituals, no handoff structure between parallel projects."*
