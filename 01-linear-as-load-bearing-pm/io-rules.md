@@ -49,14 +49,20 @@ Alternatives: `pass`, 1Password CLI (`op read 'op://Vault/Linear/token'`), `bitw
 
 **Local sessions: ALWAYS use CLI when supported, GraphQL when CLI lacks the field.** Never the Linear MCP plugin (`mcp__plugin_linear_linear__*`).
 
-**Why no Linear MCP plugin locally?**
-- It bypasses team filters (can write to any team you have access to)
-- It bypasses rate-limit guards (can hit Linear API limits silently)
-- It bypasses the CLI's caches
+**Why prefer CLI over the Linear MCP plugin locally?**
+- It bypasses your CLI's caches and helper wrappers
 - It separates the I/O patterns between local and cloud sessions, making debugging hard
+- Historically it bypassed team filters and rate-limit guards
 - Cloud sessions without CLI access *do* use the MCP — it's reserved for that case
 
 If your tool has a CLI (`linearis`, Linear's own `linear-cli`, your own wrapper), use it. If not, use direct GraphQL.
+
+**[2026 update — this stance softened, not reversed.]** Two changes weaken the "never MCP" argument:
+
+1. **Scoped, team-limited API keys.** Personal API keys can now be restricted to *Read / Write / Admin / Create issues / Create comments* and **limited to specific teams**.[¹] So the "MCP can write to any team" risk is now addressable: hand the MCP (or any agent) a key scoped to read-only or to one team. The blanket-access objection no longer holds if you scope the key.
+2. **An official remote MCP server.** Linear ships `https://mcp.linear.app/mcp` (OAuth 2.1 + dynamic client registration; you can also pass a restricted API key in the `Authorization: Bearer` header).[²] This is the *supported* MCP path, not a third-party plugin.
+
+The remaining reason to prefer the CLI locally is operational consistency (caches, wrappers, one debuggable I/O path), not a hard safety prohibition. **Recommended 2026 stance:** CLI/GraphQL for scripted local work; the official MCP with a *read-only or team-scoped* key when an agent genuinely benefits from it. Don't hand any tool a full-access workspace key.
 
 ## GraphQL examples (Linear-specific; concepts transfer)
 
@@ -216,6 +222,21 @@ Workspace-wide reminders fire weekly on the configured day/time (recommended: Fr
 
 For agents running on Friday after 16:00 in a project with an outstanding update: prompt the user with a one-line "Want me to draft the Friday update for project X?" — don't auto-post without permission. The 3-option health indicator (On Track / At Risk / Off Track) is the format.
 
+## Linear's own AI features (2026) — engage or decline?
+
+Linear shipped a stack of AI features in 2025–2026 that overlap this chapter's manual rituals. The playbook's position: **the manual patterns are the free-tier baseline; opt into Linear's AI where it removes working-memory load without taking over a decision gate.**
+
+| Linear feature | What it does | Plan | Playbook stance |
+|---|---|---|---|
+| **Linear Agent** (public beta)[³] | `@Linear` / ⌘J conversational agent: create/update issues, summarize, draft + post updates, connect MCP servers | All plans (metered) | **Engage selectively.** Great for "summarize this cycle's risk" and drafting Project Updates. Keep the *post* action human-approved (see below). |
+| **Triage Intelligence**[⁴] | LLM suggests/auto-applies team/project/assignee/label + duplicate detection | Business+ | **Engage if paid.** Accept suggestions; do not enable *auto-apply* until it has learned your workspace (weeks). The morning Triage pass stays. |
+| **Triage Rules** (deterministic)[⁴] | If-property-then-action on incoming issues | Business+ | Use for mechanical routing (keyword → project). Deterministic = safe. |
+| **Triage Automations** (Agent)[⁴] | Open-ended Agent instructions on triage | Business+ | **Decline by default.** Open-ended auto-action on your inbox violates the "never auto-promote to a cycle" gate. |
+
+**Hard rule that survives the AI features:** never let an automation *promote an issue into a cycle* or *post a Project Update* without you in the loop. AI can draft and suggest; the commit gate is yours. This is the same rule as the manual flow — the AI just makes the draft faster.
+
+If you're on the **Free tier**, none of Triage Intelligence/Rules/Automations is available — the manual morning Triage pass *is* your system, and it's sufficient. See [pricing notes in snooze-as-hibernation](./snooze-as-hibernation.md#free-tier-prerequisite).
+
 ## Don't-do list (agent-targeted)
 
 These should be in your agent's project rules or global rules:
@@ -257,6 +278,17 @@ If you use Plane, Height, Tracker, or GitHub Projects:
 | Auto-roll | (no native) | (no native) | (no native) |
 
 The patterns transfer; implementations vary. For tools without snooze or auto-roll, simulate with labels + scripts.
+
+> **[2026: changed]** Height shut down (service ended 2025-09-24) — drop it as a target. For the full, current pattern-support matrix across Plane / Shortcut / Jira / Trello / GitHub Projects, see [`alternatives.md`](./alternatives.md). Note Linear has **no public REST API** — GraphQL only — so any "REST" expectation transferred from another tool won't map.
+
+## Sources
+
+Linear claims verified via Linear's documentation-search MCP on 2026-05-31. Full notes in [`sources.md`](./sources.md).
+
+- [1]: Linear, *API & Webhooks* / *Security & Access* (scoped + team-limited keys) — https://linear.app/docs/api-and-webhooks , https://linear.app/docs/security-and-access — accessed 2026-05-31
+- [2]: Linear, *MCP server* — https://linear.app/docs/mcp — accessed 2026-05-31
+- [3]: Linear, *Linear Agent* — https://linear.app/docs/linear-agent — accessed 2026-05-31
+- [4]: Linear, *Triage* / *Triage Intelligence* — https://linear.app/docs/triage , https://linear.app/docs/triage-intelligence — accessed 2026-05-31
 
 ## Related
 
