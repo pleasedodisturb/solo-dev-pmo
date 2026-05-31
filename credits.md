@@ -41,6 +41,24 @@ These are first-party docs cited throughout. They're the ground truth this playb
 - [Lightpanda](https://github.com/lightpanda-io/browser) — Zig-based headless
 - [BrowserMCP](https://github.com/browsermcp/mcp) — real Chrome via extension
 
+## Peer-reviewed sources (ADHD research)
+
+The ADHD claims in [Chapter 00 — Principles](./00-principles/) are grounded in these, and graded by evidence tier in [00-principles/evidence-and-citations.md](./00-principles/evidence-and-citations.md). Listed separately from the blog posts below **on purpose** — these are studies; those are not.
+
+- Alderson, R. M., Kasper, L. J., Hudec, K. L., & Patros, C. H. G. (2013). ADHD and working memory in adults: A meta-analytic review. *Neuropsychology, 27*(3), 287–302. [PubMed 23688211](https://pubmed.ncbi.nlm.nih.gov/23688211/)
+- Altgassen, M., Scheres, A., & Edel, M.-A. (2019). Prospective memory (partially) mediates the link between ADHD symptoms and procrastination. *ADHD Atten Def Hyp Disord, 11*(1), 59–71. [doi:10.1007/s12402-018-0273-x](https://doi.org/10.1007/s12402-018-0273-x)
+- Barkley, R. A. (1997). Behavioral inhibition, sustained attention, and executive functions: Constructing a unifying theory of ADHD. *Psychological Bulletin, 121*(1), 65–94. [doi:10.1037/0033-2909.121.1.65](https://doi.org/10.1037/0033-2909.121.1.65)
+- Barkley, R. A. (1997). ADHD, self-regulation, and time: Toward a more comprehensive theory. *J Dev Behav Pediatr, 18*(4), 271–279. [PubMed 9276836](https://pubmed.ncbi.nlm.nih.gov/9276836/) — the "externalize at the point of performance" prescription that the "affordances, not discipline" axis rests on.
+- Beaton, D. M., Sirois, F., & Milne, E. (2022). Experiences of criticism in adults with ADHD: A qualitative study. *PLOS ONE, 17*(2), e0263366. [doi:10.1371/journal.pone.0263366](https://doi.org/10.1371/journal.pone.0263366)
+- Kasper, L. J., Alderson, R. M., & Hudec, K. L. (2012). Moderators of working memory deficits in children with ADHD: A meta-analytic review. *Clinical Psychology Review, 32*(7), 605–617. [PubMed 22917740](https://pubmed.ncbi.nlm.nih.gov/22917740/)
+- Martinussen, R., Hayden, J., Hogg-Johnson, S., & Tannock, R. (2005). A meta-analysis of working memory impairments in children with ADHD. *J Am Acad Child Adolesc Psychiatry, 44*(4), 377–384. [doi:10.1097/01.chi.0000153228.72591.73](https://doi.org/10.1097/01.chi.0000153228.72591.73)
+- Nasri, B., Kosidou, K., et al. (2022). The effect of SMS reminders on adherence in a self-guided internet-delivered intervention for adults with ADHD. *Frontiers in Digital Health, 4*, 821031. [doi:10.3389/fdgth.2022.821031](https://doi.org/10.3389/fdgth.2022.821031)
+- Sonuga-Barke, E. J. S. (2002). Psychological heterogeneity in AD/HD — a dual pathway model of behaviour and cognition. *Behavioural Brain Research, 130*(1–2), 29–36. [PubMed 11864715](https://pubmed.ncbi.nlm.nih.gov/11864715/)
+- Sonuga-Barke, E. J. S. (2003). The dual pathway model of AD/HD: An elaboration of neuro-developmental characteristics. *Neurosci Biobehav Rev, 27*(7), 593–604. [PubMed 14624804](https://pubmed.ncbi.nlm.nih.gov/14624804/)
+- Zheng, Q., Wang, X., Chiu, K. Y., & Shum, K. K. (2022). Time perception deficits in children and adolescents with ADHD: A meta-analysis. *Journal of Attention Disorders, 26*(2), 267–281. [doi:10.1177/1087054720978557](https://doi.org/10.1177/1087054720978557)
+
+Non-clinical design source for the "affordance" concept itself: Norman, D. A. (1988/2013). *The Design of Everyday Things.* Basic Books.
+
 ## Adjacent repos (related, not duplicating)
 
 These cover adjacent territory. We link to them rather than duplicating.

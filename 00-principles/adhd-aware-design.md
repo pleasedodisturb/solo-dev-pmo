@@ -6,6 +6,8 @@ This is the axis that shapes everything else. It's not about adopting "ADHD apps
 
 If you don't have ADHD, the same constraints still help. Neurotypical engineers running solo also forget to do things. The system that holds for ADHD holds for everyone.
 
+> **Evidence basis.** The empirical claims below (working-memory limits, "externalize instead of relying on willpower," time blindness, the chunking rule) are graded against the peer-reviewed literature in [evidence-and-citations.md](./evidence-and-citations.md). The short version: the central "affordances, not discipline" thesis maps directly onto Barkley's well-established "externalize at the point of performance" prescription; a couple of the supporting claims are reasonable inferences from the mechanism rather than directly tested; and one claim (the anti-streak one below) is practitioner lore, flagged as such. This is field-tested practice, not clinical guidance.
+
 ## The five required affordances
 
 A solo-engineering stack that meets this constraint has these five mechanisms. If any are missing, the system silently fails.
@@ -32,15 +34,15 @@ Big ideas don't sit as big tickets.
 
 Your PM tool must encode "this is too big" as a stop signal — see [exponential estimates](../01-linear-as-load-bearing-pm/estimates-exponential.md). When you (or an agent) try to commit a multi-day chunk to a cycle, the system pushes back and forces a breakdown.
 
-The naive "I'll break it down later" plan fails because by the time later arrives, the context has decayed.
+The naive "I'll break it down later" plan fails because by the time later arrives, the context has decayed. ("Break it down later" is a prospective-memory bet, and ADHD loses that bet more often — prospective-memory impairment statistically mediates part of the ADHD→procrastination link; see [evidence \[B\]](./evidence-and-citations.md).)
 
 ### 4. Ritual triggers, not ritual willpower
 
 If something must happen on Monday or Friday — Monday planning, Friday retro — it fires from a script, a launchd job, a calendar event, or an agent. Not from you remembering.
 
-See [Chapter 04 — Rituals and triggers](../04-rituals-and-triggers/). The pattern: `launchd` plist + ntfy push + open PM tool view at the scheduled moment. Missing the ritual is impossible because the trigger fires whether you're paying attention or not.
+See [Chapter 04 — Rituals and triggers](../04-rituals-and-triggers/). The pattern: `launchd` plist + ntfy push + open PM tool view at the scheduled moment. Missing the ritual is impossible because the trigger fires whether you're paying attention or not. (External momentary cues beating unaided memory is the tested part; a randomized trial found SMS reminders improved adherence for adults with ADHD — see [evidence \[B\]](./evidence-and-citations.md).)
 
-**Anti-pattern:** streak tracking / gamification. ADHD + streaks = guilt spiral on first miss. Counterproductive. Don't track streaks; track *whether the trigger fired*, which is separable from whether you did the thing.
+**Anti-pattern:** streak tracking / gamification. Don't track streaks; track *whether the trigger fired*, which is separable from whether you did the thing. A streak adds a failure mode — the broken streak — that a plain "did it fire?" check doesn't have, and you lose nothing by not counting. The common rationale ("a broken streak triggers an ADHD-specific guilt/shame spiral") is **practitioner lore, not established research** — the construct it leans on (rejection-sensitive dysphoria) is unvalidated and not in the DSM-5. We keep the advice because it stands on its own as system design; we don't claim the spiral mechanism. See [evidence \[C\]](./evidence-and-citations.md).
 
 ### 5. WIP limits enforced by the system
 
@@ -70,6 +72,7 @@ Every chapter in this playbook is downstream of this principle. When in doubt, a
 
 ## Related
 
+- [Evidence basis and citations](./evidence-and-citations.md) — every empirical claim above, graded against the peer-reviewed literature (and the lore flagged as lore)
 - [Single source of truth](./single-source-of-truth.md) — the inbox part of the rule
 - [Chapter 01 — Linear as load-bearing PM](../01-linear-as-load-bearing-pm/) — the tool that implements most affordances
 - [Chapter 04 — Rituals and triggers](../04-rituals-and-triggers/) — the ritual-trigger part

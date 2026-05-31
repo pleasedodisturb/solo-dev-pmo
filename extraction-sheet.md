@@ -26,6 +26,7 @@ The combination of all five was the substrate for this playbook.
 | Four-layer memory architecture | Global agent instructions |
 | Single source of truth | Cross-cut from auto-memory + global PM I/O rules |
 | Calendar-vendor-neutrality | Auto-memory (feedback) |
+| Evidence grading + peer-reviewed ADHD citations | New (P00 research-grounding pass — peer-reviewed literature, with explicit hedging where the source claims were practitioner lore) |
 
 ### Linear as load-bearing PM (01)
 
@@ -155,6 +156,7 @@ The published recipe stays transferable; the personal context stays in the origi
 
 Beyond the source patterns:
 
+- **Evidence-and-citations grading** ([`00-principles/evidence-and-citations.md`](./00-principles/evidence-and-citations.md)) — a P00 research pass that grades each empirical ADHD claim against the peer-reviewed literature (tiers A/B/C), grounds the well-supported ones, and explicitly flags the practitioner-lore ones (notably the anti-streak rationale) rather than asserting them. The original source material made these claims without citation; this pass added the provenance and the hedges.
 - **Innovative pattern callouts** at the end of each section — extensions that flow from the source patterns but weren't in the originals
 - **Field-tested gotcha callouts** — reframed from audit history into transferable lessons
 - **Competitor analysis** in the top-level README — synthesized from a landscape audit done as part of this extraction
