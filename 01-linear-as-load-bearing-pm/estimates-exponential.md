@@ -12,6 +12,8 @@ The exponential scale enforces this. The 16-pointer is a deliberate dead-end: an
 
 ## Why exponential, not Fibonacci or T-shirt
 
+Linear ships four scale options — linear, exponential, Fibonacci, and t-shirt.[¹] This chapter picks exponential. Here's the defense.
+
 | Scale | Values | Solo + ADHD verdict |
 |---|---|---|
 | T-shirt (XS/S/M/L/XL) | 5 buckets, no math | Hides time-blindness. "M" is whatever you want it to be. |
@@ -24,6 +26,16 @@ For solo + ADHD:
 - Fibonacci 13 / 21: useless top end — both translate to "this isn't going to ship this cycle"
 - Linear 1-5: 3 and 4 become a debate
 - **Exponential**: 1=hour, 2=morning, 4=half-day, 8=full-day, 16=BREAK IT UP. Clear framing.
+
+### The case literature (revisited 2026)
+
+The reason *any* non-linear scale exists is that you can't tell a 21 from a 22, so fine gradations at the top are false precision. Mike Cohn's modified-Fibonacci scale spaces numbers ~60% apart for exactly this reason — wide enough that the difference is perceptible, and large estimates "imply a precision the team didn't intend."[²] Steve McConnell makes the structural argument: software has *diseconomies of scale* (communication and integration cost rise faster than size), so a bigger item isn't linearly bigger — it's disproportionately riskier, which is why scales widen and why large items should be decomposed.[³]
+
+Both arguments support a doubling scale as well as Fibonacci — the gaps are perceptible and the top end is coarse. **No primary author publishes "1/2/4/8/16" as a named method**; it shows up as a *selectable option* in tooling (Linear's "exponential"; ZenHub documents "a simple doubling of numbers 1, 2, 4, 8, 16, 32" as an alternative to Fibonacci[⁴]). So treat the exponential choice as well-grounded-in-principle, author-opinionated-in-specifics — not as received wisdom.
+
+The opposite pole is worth knowing. Ron Jeffries — credited with originating story points — now says if he invented them he's "a little sorry," and advises dropping them if they aren't adding value.[⁵] Allen Holub's #NoEstimates position is blunter: estimates are "waste" that "introduce dysfunction."[⁶] Martin Fowler takes the pragmatic middle — estimation is worth it or not *depending on the purpose the estimate serves*, and velocity "is not a measure of productivity."[⁷] For a solo dev the #NoEstimates critique partly lands (no one is gaming your velocity), but estimation here isn't for reporting — it's a *calibration instrument against your own time-blindness*. That's a purpose Fowler's test passes.
+
+**Honest gap:** we found no empirical study (2018+) comparing *accuracy by scale type* — Fibonacci vs doubling vs t-shirt. The defensible academic frames are adjacent: SPACE ("productivity cannot be reduced to a single dimension or metric")[⁸] and DORA, which deliberately measures delivery (lead time, deploy frequency) and *not* estimation or velocity.[⁹] So the exponential-scale choice rests on principle and field experience, not on a controlled trial. We're not going to pretend otherwise.
 
 ## What each value means (calibrated)
 
@@ -50,6 +62,8 @@ When you (or an agent) estimate something as 16:
 - The 16-pointer becomes a parent / tracker.
 
 If the breakdown produces sub-issues that *also* estimate at 16, repeat. If you can't break it down past 16, the work isn't ready — there are unanswered questions. Spike it first (see `/gsd-spike` workflow if you use GSD).
+
+**Where the rule comes from (honest attribution).** The *principle* — a top-of-scale estimate forces decomposition before it enters a cycle — is well-published. Mike Cohn: if story points keep "hitting the highest numbers on the Fibonacci sequence, you should re-assess your user story and break it down."[¹⁰] Atlassian's own team treats "a user story estimated at 20 points or more" as "a red flag: too big to fit in their two-week sprints."[¹¹] SAFe's right-sizing guidance and Cohn's SPIDR splitting method (Spike, Paths, Interfaces, Data, Rules) are the "how."[¹²] What we could *not* find is anyone publishing the specific framing of **16 on a doubling scale as a hard wall**. So: the principle is borrowed and well-grounded; the exact number (16) and the "dead-end, not a size" framing are the author's. Atlassian's "20 = too big" is the nearest published hard cap.
 
 **Field test:** ~40% of "I'll just do it this week" plans contain a 16-point issue in disguise — labeled as 8 because labeling it 16 would surface a problem the user is avoiding. Audit cycle plans for this. The disguised-16 is the issue that always slips.
 
@@ -107,6 +121,23 @@ In the [ticket standard](./ticket-standard.md), the `Execution Metadata` section
 - L (estimate 16) — refuse, force breakdown
 
 At close, the agent comments with actual tokens consumed. Over time you get agent-side calibration data alongside your own.
+
+## Sources
+
+Linear docs verified via Linear's documentation-search MCP on 2026-05-31. External quotes below were gathered via web search (the source domains block automated full-page fetch); treat them as accurate attributions of each author's well-documented position and spot-check verbatim wording before reuse. Full notes in [`sources.md`](./sources.md).
+
+- [1]: Linear, *Estimates* — https://linear.app/docs/estimates (linear/exponential/Fibonacci/t-shirt scales) — accessed 2026-05-31
+- [2]: Mike Cohn, *Why the Fibonacci Sequence Works Well for Estimating* — https://www.mountaingoatsoftware.com/blog/why-the-fibonacci-sequence-works-well-for-estimating — accessed 2026-05-31
+- [3]: Steve McConnell, *Software Estimation: Demystifying the Black Art* (2006), ch.7 "Count, Compute, Judge" / "Diseconomies of Scale" — https://www.oreilly.com/library/view/software-estimation-demystifying/0735605351/ — accessed 2026-05-31
+- [4]: ZenHub, *Story Point Estimation* (documents "doubling 1,2,4,8,16,32" as an alternative) — https://blog.zenhub.com/how-to-estimate-software-development-projects-with-story-points/ — accessed 2026-05-31
+- [5]: Ron Jeffries, *Story Points Revisited* — https://ronjeffries.com/articles/019-01ff/story-points/Index.html — accessed 2026-05-31
+- [6]: Allen Holub, *#NoEstimates: An Introduction* — https://holub.com/noestimates-an-introduction/ — accessed 2026-05-31
+- [7]: Martin Fowler, *Purpose Of Estimation* / *Xp Velocity* — https://martinfowler.com/bliki/PurposeOfEstimation.html , https://martinfowler.com/bliki/XpVelocity.html — accessed 2026-05-31
+- [8]: Forsgren, Storey, Maddila, Zimmermann, Houck, Butler, *The SPACE of Developer Productivity*, ACM Queue 2021 — https://queue.acm.org/detail.cfm?id=3454124 — accessed 2026-05-31
+- [9]: DORA, *Software delivery performance metrics (Four Keys)* — https://dora.dev/guides/dora-metrics-four-keys/ — accessed 2026-05-31
+- [10]: Mike Cohn, *Estimating with Story Points* — https://www.mountaingoatsoftware.com/agile/agile-estimation-estimating-with-story-points — accessed 2026-05-31
+- [11]: Atlassian, *Break it down: decomposing user stories in Jira* ("20 points or more… too big") — https://www.atlassian.com/blog/jira/break-decomposing-user-stories-jira — accessed 2026-05-31
+- [12]: Scaled Agile, *Right-Sizing Features* — https://framework.scaledagile.com/right-sizing-features-for-safe-program-increments/ ; Mike Cohn, *SPIDR* — https://www.mountaingoatsoftware.com/blog/five-simple-but-powerful-ways-to-split-user-stories — accessed 2026-05-31
 
 ## Related
 
