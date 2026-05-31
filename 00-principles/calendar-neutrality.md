@@ -60,6 +60,38 @@ This is *not* a technical claim that GCal can't work — it can. It's a constrai
 
 If you don't share that goal, your time layer can be different. Use GCal + Fantastical, get the prettier UI. But the rest of this playbook still works.
 
+## CalDAV & calendar options in 2026
+
+The "CalDAV when needed" row above names Proton, but that now needs a correction: **Proton and Tuta deliberately don't offer full CalDAV** — they end-to-end-encrypt everything and accept the interoperability cost.[¹][²] If you actually need CalDAV sync, the realistic 2026 options:
+
+| Option | Vendor-neutral | Plaintext | CalDAV | Notes |
+|---|---|---|---|---|
+| `schedule.md` + launchd + ntfy + `.ics` (this playbook) | yes | yes | export-only | the default pick; no server to run |
+| **Radicale**[³] | yes (self-host) | yes (plain files, no DB) | yes | ~90% lighter than Nextcloud; great for one user; no sharing/multi-cal |
+| **Nextcloud Calendar**[⁴] | yes (self-host) | no (DB) | yes | full groupware + web UI; heavier |
+| **Fastmail**[²] | no (hosted) | no | yes (best reliability) | paid, AU jurisdiction |
+| **Proton / Tuta Calendar**[¹][²] | yes (privacy) | no | no (E2EE, no full CalDAV) | encrypted but not interoperable |
+| **GCal + Fantastical** | no | no | yes | the thing this chapter avoids |
+
+For a CLI-first plaintext workflow, **vdirsyncer + khal** front-ends any CalDAV server: vdirsyncer syncs each event to a local single-`.ics` plain-text file, khal reads them, `todoman` handles tasks, and `khalel`/`khalorg` bridge to org-mode.[⁵] That's the "plaintext schedule" idea above, with two-way CalDAV sync bolted on.
+
+## Why ntfy specifically (the GrapheneOS test)
+
+The push layer is the load-bearing part of vendor-neutrality, because notifications are where Google/Apple usually re-enter through the back door. On a de-Googled phone (GrapheneOS), there are two ways to get push: run **Sandboxed Google Play** so apps can reach FCM, or use **UnifiedPush**, the open push protocol that needs no Google services.[⁶] ntfy is a UnifiedPush distributor — which is exactly why it's the pick: it delivers to a de-Googled phone without FCM or Apple Push.[⁶] If your push tool only speaks FCM/APNs, your "vendor-neutral" stack has a Google/Apple dependency hiding in the notification path.
+
+## Alternatives (the honest "why not the easy thing")
+
+The easy thing is GCal + Fantastical, and it works — better UI, zero setup, reliable push. We reject it only because of the stated goal (reduce Google/Apple dependency); if you don't hold that goal, take the easy thing and the rest of the playbook is unaffected (see "Why this is opinionated" above). What the privacy-community consensus confirms: there's no single drop-in that's simultaneously pretty, hosted, free, *and* vendor-neutral — Privacy Guides itself only lands on Tuta/Proton (E2EE, no CalDAV) and points CalDAV-needers at Fastmail.[¹][²] The plaintext-first stack is how you keep all four properties, at the cost of a little assembly.
+
+## Sources
+
+[1]: https://www.privacyguides.org/en/calendar/ — Privacy Guides calendar recommendations (Tuta, Proton; E2EE-vs-CalDAV trade-off). Accessed 2026-05-31.
+[2]: https://blog.mailfence.com/proton-calendar-support-caldav/ — Proton Calendar lacking CalDAV; Fastmail as the CalDAV-reliable option. Accessed 2026-05-31.
+[3]: https://radicale.org/ — Radicale, lightweight file-based CalDAV/CardDAV server (no database). Accessed 2026-05-31.
+[4]: https://nextcloud.com/athome/ — Nextcloud Calendar (CalDAV + web UI, full groupware). Accessed 2026-05-31.
+[5]: https://github.com/pimutils/khal — khal CLI calendar (syncs via vdirsyncer; plain `.ics` files); khalorg/khalel bridge to org-mode. Accessed 2026-05-31.
+[6]: https://unifiedpush.org/ — UnifiedPush (Google-free push protocol); ntfy is a UnifiedPush distributor and works on GrapheneOS. Accessed 2026-05-31.
+
 ## Related
 
 - [Chapter 04 — Rituals and triggers](../04-rituals-and-triggers/) — full launchd / ntfy / plaintext recipes
