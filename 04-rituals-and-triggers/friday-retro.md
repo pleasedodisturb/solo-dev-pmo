@@ -24,6 +24,21 @@ The 3 options carry meaning:
 
 You can write more, but you don't have to. The 3-option is the floor.
 
+## Why Friday, why 5 minutes (cadence defense)
+
+What's earned vs. preference:
+
+- **Weekly, Friday** — defensible *as Linear's own documented convention*: Linear
+  the company writes project updates every week, on Friday.[¹] It is their
+  practice, not a researched optimum — we found no peer-reviewed day-of-week
+  effect on retro quality — so adopt it as a sane convention, not a law.
+- **16:00, 5 minutes** — *author preference.* Note the tension: Atlassian's
+  retrospective guide budgets **30–60 minutes** for a *team* retro.[²] A 5-minute
+  solo retro is a deliberate scale-down — one person needs far less coordination
+  than a team — but be honest that it's a floor chosen for adherence, not a
+  research-backed duration. If 5 minutes feels too thin, the fix is a longer
+  *cooldown* retro (below), not a longer weekly one.
+
 ## Companion script
 
 The Linear reminder is the retro. The companion script enriches it.
@@ -134,6 +149,13 @@ The retro is for *signal*, not *action*. Action is for Monday.
 
 ## The cooldown retro
 
+The deeper retro rides on a **cooldown** — borrowed from Basecamp's Shape Up,
+where a six-week cycle is followed by two weeks of unstructured "cool-down" for
+bug-fixing, exploration, and work that doesn't fit a cycle.[³] Our every-4th-week
+cadence is an **adaptation**, not Shape Up's literal 2-weeks-per-6 — flagged so
+you don't cite it as orthodox. The idea (scheduled recovery/cleanup time between
+intense cycles) is the part that's sourced; the exact rhythm is ours.
+
 Every 4th cycle, the cooldown cycle is the time for a bigger retro:
 
 - 4-week patterns (what At Risk recurred?)
@@ -169,6 +191,16 @@ If "At Risk" on the same project for 2 weeks running, the script auto-files a `b
 
 The system surfaces the pattern before you've consciously noticed it.
 
+## When you start skipping it
+
+The Friday retro is the *first* ritual a tired solo dev drops — it feels optional
+because nobody else reads it. Two skipped Fridays in a row is the trigger to
+diagnose, not next quarter ([ritual-fatigue](./ritual-fatigue.md)). Shrink before
+you quit: a retro can collapse to a single line — *"shipped X, blocked on Y,
+Monday I do Z"* — and still feed next week's plan. If even that gets skipped,
+move the prompt (the Linear nudge is easy to swipe away; try a tmux banner at
+wrap time instead) before declaring the ritual dead.
+
 ## Innovative pattern: archive-and-compress retros
 
 Quarterly: bundle all weekly retros into a quarter summary. Surface trends:
@@ -183,4 +215,11 @@ Quarter summary is the "annual review" gradient — short, frequent, low-stakes.
 - [Chapter 01 — Cycles and rituals](../01-linear-as-load-bearing-pm/cycles-and-rituals.md) — Project Update is the cycle's retro
 - [Monday planning](./monday-planning.md) — At Risk feeds next Monday's plan
 - [launchd over cron](./launchd-over-cron.md) — fires the companion script
+- [ritual-fatigue](./ritual-fatigue.md) — the retro is the first ritual to decay; how to catch it
 - [Chapter 01 — Never defer](../01-linear-as-load-bearing-pm/never-defer.md) — file tickets from retro now, not later
+
+---
+
+[1]: https://linear.app/now/how-we-built-project-updates — Linear writes project updates weekly, on Friday (company practice) — accessed 2026-05-31
+[2]: https://www.atlassian.com/team-playbook/plays/retrospective — Atlassian retrospective play, 30–60 min for a team retro — accessed 2026-05-31
+[3]: https://basecamp.com/shapeup — Basecamp, Shape Up: a 6-week cycle is followed by a 2-week cool-down — accessed 2026-05-31

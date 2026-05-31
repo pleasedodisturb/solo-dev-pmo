@@ -104,7 +104,22 @@ if tmux has-session -t main 2>/dev/null; then
 fi
 ```
 
-Wire to launchd per [launchd-over-cron](./launchd-over-cron.md).
+Wire to launchd per [launchd-over-cron](./launchd-over-cron.md) (or
+[systemd](./linux-systemd-variant.md) on Linux).
+
+## Why these numbers (cadence defense)
+
+Separate what's earned from what's preference:
+
+- **Weekly, Monday** — defensible. The plan loads the cycle, and the cycle starts
+  Monday; planning the week at its start is ordinary cycle hygiene
+  ([Chapter 01](../01-linear-as-load-bearing-pm/cycles-and-rituals.md)).
+- **15-minute cap** — *author preference*, but the principle is sound: fixed,
+  short timeboxes beat open-ended work. Pomodoro builds discipline on a fixed
+  25-minute unit;[¹] Newport's time-block planning assigns every block a fixed
+  allocation instead of reacting to an open list;[²] and Parkinson's Law is the
+  reason for a *hard* cap — planning expands to fill whatever time you give it.[³]
+  15 is small enough that bloat can't creep in. Pick your own number, but cap it.
 
 ## The 15 minutes
 
@@ -154,6 +169,15 @@ The cause is almost always:
 
 If the ritual takes 45 minutes consistently, it'll stop happening. Cap at 15.
 
+## When you start skipping it
+
+Two skipped Mondays in a row is the signal, not noise
+([ritual-fatigue](./ritual-fatigue.md)). The first move is **shrink**, not
+willpower: drop the full plan to a 3-item check (carry-over? stale Triage? one
+lead project?) and let the rest go. The `monday-plan` telemetry (skip streak,
+time-to-done) is your early-warning detector. If the skip streak survives
+shrinking, the ritual may be ceremony — retire it and see what you actually miss.
+
 ## Field-tested gotchas
 
 **The script blocks on `linearis` slow calls.** First Monday after a long absence (no cache) can be 30+ seconds. Pre-warm by running it on Sunday night.
@@ -201,3 +225,10 @@ Weekly review of telemetry reveals patterns:
 - [ntfy notifications](./ntfy-notifications.md) — what pushes to phone
 - [Chapter 01 — Cycles and rituals](../01-linear-as-load-bearing-pm/cycles-and-rituals.md) — the cycle structure this plans into
 - [Friday retro](./friday-retro.md) — the companion ritual
+- [ritual-fatigue](./ritual-fatigue.md) — when the Monday plan starts getting skipped
+
+---
+
+[1]: https://www.pomodorotechnique.com/ — Pomodoro Technique, fixed 25-minute work unit — accessed 2026-05-31
+[2]: https://calnewport.com/deep-habits-the-importance-of-planning-every-minute-of-your-work-day/ — Cal Newport, time-block planning — accessed 2026-05-31
+[3]: https://en.wikipedia.org/wiki/Parkinson%27s_law — Parkinson's Law: work expands to fill the time available (orig. C. N. Parkinson, The Economist, 1955) — accessed 2026-05-31
