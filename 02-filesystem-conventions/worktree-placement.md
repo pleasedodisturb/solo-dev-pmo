@@ -33,9 +33,30 @@ Specifically `~/.claude/` because:
 - It's already the Claude Code config directory. Agents that work with worktrees are at home there.
 - Aligns with `your-toolkit`'s existing `.claude/worktrees/` pattern (if you use a similar dotfiles setup).
 - It's outside `~/Projects/` so the layout there stays clean.
-- Backed up by your existing dotfiles sync (Syncthing, dotfiles, etc.).
+- Worktrees are **disposable** — a transient checkout of an existing branch — so this directory does *not* need backing up. (Don't sync it; see the caveat below.)
 
-If you don't have `~/.claude/`, pick a parallel dir: `~/Code-worktrees/` or `~/.git-worktrees/`. The point is "not in `~/Projects/`."
+Git imposes no placement requirement: a linked worktree is just a directory whose `.git` *file* holds an absolute `gitdir:` pointer back to the main repo,[¹] so it works anywhere on disk. The official docs' own example puts a worktree at a *sibling* path (`git worktree add ../hotfix`);[¹] we deliberately hoist it out of `~/Projects/` entirely instead.
+
+## For non-Claude-Code users
+
+Nothing here depends on Claude Code — `~/.claude/` is just a convenient out-of-`~/Projects/` home. If you don't use Claude Code, pick a parallel root: `~/worktrees/<repo>/<branch>/` or `~/.git-worktrees/<repo>/<branch>/`. The only rule is "not in `~/Projects/`."
+
+Two established placement patterns from the wider git community, either of which composes with this:
+- **Sibling directories** — worktrees next to the main clone (`../my-app-hotfix`). The git docs' default; predictable, avoids nested-`.git` confusion.[¹][²]
+- **Bare repo + sibling worktrees** — `git clone --bare <url> .git` then `git worktree add` each branch; all worktrees share one `.git/`, nothing is "the main checkout." Popular with parallel-agent setups.[²] If you adopt this, the bare repo is the disk leaf and the worktrees hang beside it under your chosen worktree root.
+
+## ⚠️ Never put worktrees in a cloud-synced folder
+
+If your worktree root (or `~/.claude/`) lands inside **iCloud Drive, Dropbox, or OneDrive**, expect corruption. A `.git` directory is many small files updated transactionally, and file-sync tools don't honor git's atomicity — so a sync mid-write produces a broken repo or "conflicted copy" files. This is widely reported: iCloud "works fine — until it doesn't… your repo is corrupted,"[³] and Dropbox users hit "conflicted copies when running git commands."[⁴] The fix is to keep git out of synced folders; selective-sync excludes of `.git` are themselves unreliable.[⁵]
+
+On macOS, also exclude worktree roots from **Time Machine** and **Spotlight** — many small churning files plus a `node_modules`/`.venv` per worktree create real backup and indexing churn:[⁶][⁷]
+
+```bash
+tmutil addexclusion ~/.claude/worktrees          # skip Time Machine
+touch ~/.claude/worktrees/.metadata_never_index  # skip Spotlight
+```
+
+Worktrees are disposable, so excluding them costs you nothing. (No evidence either way on Syncthing — it handles small files better, but we found no source confirming it's safe for live `.git`; don't assume it is.)
 
 ## When to use worktrees
 
@@ -87,6 +108,17 @@ If a worktree dir is deleted manually (bypassing `git worktree remove`):
 git -C ~/Projects/<category>/<repo> worktree prune
 ```
 
+## direnv across worktrees (the elsewhere-ergonomics recipe)
+
+Because a worktree lives *outside* the main checkout, direnv's normal upward `.envrc` search (`find_up` / `source_up`) never reaches the main repo's `.envrc` — the worktree isn't a child of it. The fix is to resolve the main repo via git's common-dir pointer, which works from any linked worktree regardless of where it sits. Drop a one-line `.envrc` in each worktree:
+
+```bash
+# .envrc inside a worktree — load the main checkout's env wherever it lives
+source_env "$(git rev-parse --git-common-dir)/../.envrc"
+```
+
+`git rev-parse --git-common-dir` points at the main repo's `.git` from inside any worktree,[⁸] so `../.envrc` resolves to the main checkout's `.envrc` even at `~/.claude/worktrees/<repo>/<branch>/`. Then `direnv allow` once. (Simpler alternative: symlink the main `.envrc` into the worktree and `direnv allow`.) Bake this into your worktree-creation script so every new worktree is env-ready. Note: a parent `.envrc` loaded via `source_env`/`source_up` is *not* re-checked by direnv's security framework,[⁸] so only do this for `.envrc` files you trust.
+
 ## Worktree-aware launcher
 
 Your `c <name>` shell function should be worktree-aware:
@@ -131,6 +163,8 @@ Why: long workflows make branch switches in the main checkout dangerous. If you 
 
 **The path-encoding for Claude Code memory.** A worktree at `~/.claude/worktrees/foo/bar/` may not have a corresponding memory dir. Some setups symlink memory back to the main checkout's memory; others give worktrees independent memory. Decide which.
 
+**`info/exclude` and config are SHARED across worktrees, not per-worktree.** `$GIT_DIR/info/exclude` lives under the common dir, so a "local ignore" you add there leaks to *every* worktree.[⁹] Config is shared too by default; for genuinely per-worktree settings turn on `git config extensions.worktreeConfig true` and write with `git config --worktree`.[¹] (`core.worktree` must never be shared.)
+
 ## Innovative pattern: ticket-worktree pairing
 
 A `ticket-worktree-start` script:
@@ -172,8 +206,21 @@ fi
 
 System-enforced parallel safety. Beats the "two agents racing on the same file" failure mode.
 
+## Sources
+
+- [¹] https://git-scm.com/docs/git-worktree — accessed 2026-05-31
+- [²] https://medium.com/@miladpw/git-worktrees-with-bare-repos-a-clean-setup-for-modern-development-c5b251ee7b73 — accessed 2026-05-31
+- [³] https://josh.fail/2022/a-solution-for-git-repos-and-icloud/ — accessed 2026-05-31
+- [⁴] https://www.dropboxforum.com/discussions/101001014/why-am-i-getting-conflicted-copies-when-using-git-commands-onmacos-ventura-with-/708318 — accessed 2026-05-31
+- [⁵] https://sqlpey.com/git/git-dropbox-safe-practices/ — accessed 2026-05-31
+- [⁶] https://www.heissenberger.at/en/blog/macos-exclude-node_modules-folder-from-time-machine/ — accessed 2026-05-31
+- [⁷] https://mjtsai.com/blog/2025/07/21/spotlight-indexing-running-wild/ — accessed 2026-05-31
+- [⁸] https://direnv.net/man/direnv-stdlib.1.html — accessed 2026-05-31
+- [⁹] https://git-scm.com/docs/gitrepository-layout — accessed 2026-05-31
+
 ## Related
 
 - [Layout B](./layout-b-subfolders.md) — what `~/Projects/` looks like (worktrees are out of scope there)
 - [Chapter 01 — Ticket standard](../01-linear-as-load-bearing-pm/ticket-standard.md) — `Worktree` execution metadata field
 - [Chapter 06 — Session discipline](../06-session-discipline/) — long workflow rules
+- [Migration recipe](./migration-recipe.md) — remove worktrees before moving a repo (both-moved is unrepairable)
