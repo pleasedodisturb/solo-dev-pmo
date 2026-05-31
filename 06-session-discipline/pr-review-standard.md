@@ -24,10 +24,23 @@ You always have the full diff locally. There's no reason to push first and revie
 - [ ] **XSS** — user input rendered in HTML/JS without escaping
 - [ ] **Path traversal** — user-controlled file paths
 - [ ] **Validation gaps** — fields that lost or weakened validation
-- [ ] **Secrets exposure** — API keys, tokens, credentials in code or logs
+- [ ] **Secrets exposure** — API keys, tokens, credentials in code or logs (see [Chapter 05 — Secret scanning](../05-secrets-and-secure-defaults/) for the mechanical scan; this checklist is the human-judgment layer on top)
 - [ ] **Dependency safety** — new deps audited, no known vulnerabilities
 - [ ] **Auth/authz** — permission checks not bypassed or weakened
 - [ ] **CORS / CSP** — no overly permissive origins or policies
+
+## Merge-readiness checklist
+
+The two checklists above are the *content* review. These six items are the *process* gate — the answer to "is this branch allowed to merge?" This is the checklist a reviewer (human or [AI — see below](#ai-assisted-self-review)) runs end to end. **It is the one this very chapter was written against** (Claude Code is the reviewer here):
+
+- [ ] **Correctness** — code review checklist passed (or N/A: docs/license-only)
+- [ ] **Security** — security review checklist passed (or N/A: no inputs). Mechanical secret scan green ([Chapter 05](../05-secrets-and-secure-defaults/))
+- [ ] **Tests** — new/changed code paths covered; suite green. Docs/license exempt
+- [ ] **Conventions** — follows the locked [conventions](./audit-and-conventions-pattern.md); no drift
+- [ ] **Ticket-referenced** — every commit subject carries the ticket ID ([commit cadence](./commit-cadence.md))
+- [ ] **Signed** — commits signed ([Chapter 05 — Git signing](../05-secrets-and-secure-defaults/git-signing.md)) and carry the `Reviewed-by:` trailer
+
+If every box is checked or explicitly N/A-with-reason, the branch is shippable. "Shippable" for solo dev = mergeable to `main`, because `main` IS prod.
 
 ## How to review
 
@@ -41,6 +54,19 @@ gh pr diff <number>  # review the diff
 ```
 
 For solo dev: you're both author and reviewer. The discipline is to look at the diff *as a stranger would*. The "I just wrote it, I know what it does" mindset is what misses bugs.
+
+### Self-review: same vs. different from team review
+
+The checklist is identical to a team's. What changes is the social function the review used to perform — and you have to replace it deliberately:
+
+| Function | Team review | Solo self-review replacement |
+|---|---|---|
+| **Second pair of eyes** | A different brain catches your blind spots | Time-shift (review after a break) or an [AI reviewer](#ai-assisted-self-review) as the second brain |
+| **Knowledge transfer** | Reviewer learns the change | The [session log + audit](./audit-and-conventions-pattern.md) carries it to future-you |
+| **Gatekeeping** | Reviewer can block merge | The pre-push hook + merge-readiness checklist are the gate |
+| **Accountability** | "Approved-by" names someone | You're accountable either way; the `Reviewed-by:` trailer records that the gate ran |
+
+The trap of solo review is collapsing all four into "I looked at it." Will Larson notes most team review is fast-but-low-signal anyway[⁶] — so the bar isn't "reproduce a rigorous team"; it's "don't skip the gate just because no one's watching." The two structural aids that actually move signal: a **time gap** (review the diff cold, not while the intent is still warm in your head) and a **fresh-context reviewer** (a sub-agent or `/code-review` that never saw you write it).
 
 ### Subagent PRs
 
@@ -56,6 +82,17 @@ Include review in the agent prompt:
 The subagent reviews its own work (or a sibling subagent reviews). For high-stakes changes, the main session reviews subagent PRs.
 
 ## The `Reviewed-by:` trailer
+
+The trailer isn't a playbook invention — it's the Linux kernel's. The kernel's `Reviewed-by:` carries a formal **Reviewer's Statement of oversight**: by offering the tag you state that you carried out a technical review evaluating the change's readiness, and that any concerns were communicated back and resolved.[⁷] The kernel ladder of strength is worth borrowing wholesale for solo work, because each tag maps to a different gate you might apply:
+
+| Trailer | Kernel meaning[⁷] | Solo-dev use |
+|---|---|---|
+| `Signed-off-by:` | Developer Certificate of Origin — you have the right to submit | Provenance; pairs with [git signing](../05-secrets-and-secure-defaults/git-signing.md) |
+| `Reviewed-by:` | Technical review carried out, concerns resolved | The gate this chapter enforces |
+| `Tested-by:` | Successfully tested in some environment | Record that the suite/manual test actually ran |
+| `Acked-by:` | Approval without full review | When you wave through a trivial docs change |
+
+Adoption is broader than Linux — the Git project itself, Gerrit, QEMU, and U-Boot all use these trailers[⁷] — so the convention is safe to lean on, not a one-project quirk. Git ships first-class support: `git interpret-trailers` and `git commit --trailer` parse and append them in RFC-822 `Token: value` form.[⁸]
 
 After review passes, add the trailer to each commit being pushed:
 
@@ -102,15 +139,21 @@ done
 
 Wire via `git config --global core.hooksPath ~/.claude/git-hooks`. Applies to every repo unless overridden locally.
 
-## Emergency bypass
+## Emergency bypass (the escape hatch)
 
-When a review can't happen but a push must (broken CI, urgent hotfix), name a reason in the commit body:
+Discipline that can't be bypassed gets bypassed *silently* — someone uses `--no-verify` at 2am and the gate is now a lie. So the playbook ships a **loud, logged** escape hatch instead of pretending emergencies don't happen:
 
 ```bash
 PRE_PUSH_REVIEW_OVERRIDE=1 git push <args>
 ```
 
-Document the bypass in the next audit so future-you remembers what happened.
+Rules for using it:
+1. **Name the reason in the commit body** — "BYPASS: prod down, payment webhook 500s, reviewing post-merge."
+2. **It's explicit, not `--no-verify`.** `--no-verify` is banned (it silently skips *every* hook, including secret-scanning); the env var skips *only* the review gate and prints that it did.
+3. **File a follow-up ticket immediately** to do the review you skipped ([never-defer](../01-linear-as-load-bearing-pm/never-defer.md)). The bypass buys time, it doesn't cancel the debt.
+4. **Document it in the next [audit](./audit-and-conventions-pattern.md)** so future-you knows this commit didn't go through the gate.
+
+**Embargoed security patches** are the one case where you *don't* open a public PR at all: commit on a private branch, push to a private remote, and only open the PR after the embargo lifts. The review still happens — just not in the open. The bypass is for the *public PR step*, not the review.
 
 ## What constitutes "passed review"
 
@@ -156,36 +199,48 @@ Trust the subagent's review for routine work. Spot-check for high-stakes.
 
 ## Innovative pattern: review-and-trailer in one command
 
+No-AI fallback — wrap "open diff → review → trailer → push" in one function so the trailer can't be forgotten:
+
 ```bash
-# Set as alias / function
-review-and-push() {
-  gh pr diff "$1" > /tmp/pr-diff
-  # Run checklist interactively
-  echo "Review the diff. Press Enter when done, q to abort."
-  less /tmp/pr-diff
-  read -r resp < /dev/tty
-  if [ "$resp" != "q" ]; then
-    git commit --amend --no-edit --trailer "Reviewed-by: ..."
-    git push
-  fi
+review-and-push() {            # review by eye in the pager, then on pass:
+  gh pr diff "$1" | less
+  git commit --amend --no-edit --trailer "Reviewed-by: <you> (code+security)"
+  git push
 }
 ```
 
-Lower friction than separate "open diff, review mentally, run trailer command, push."
+## AI-assisted self-review
 
-## Innovative pattern: review delegation
+The "fresh-context reviewer" the [self-review table](#self-review-same-vs-different-from-team-review) calls for is now a built-in. Claude Code ships two bundled commands that read the pending diff and report findings:
 
-A `/review-pr <number>` skill that:
-1. Fetches the diff
-2. Runs each checklist item against the diff
-3. Reports findings (potential issues + clean items)
-4. Adds the `Reviewed-by:` trailer if clean
-5. Pushes
+- **`/code-review`** — general correctness/quality pass over the working diff.
+- **`/security-review`** — spawns a `security-reviewer` sub-agent tuned to surface **HIGH-CONFIDENCE, newly-introduced** vulnerabilities only, not a general lint. It exists both as the slash command and as the open-source `anthropics/claude-code-security-review` GitHub Action.[⁹]
 
-You confirm the review report; the skill handles the trailer.
+The leverage: the reviewer sub-agent runs in its **own context** and never watched you write the code, so it doesn't share your blind spots — the closest a solo dev gets to a second pair of eyes on demand.
+
+**What to ask it.** Point it at the diff and the two checklists above. "Review this diff for correctness and security per `pr-review-standard.md`. Report HIGH-confidence issues, then MEDIUM, then a clean-items list." Make it cite line ranges so you can verify.
+
+**What to ignore.** AI review's failure mode is volume — low-confidence nits and style opinions that aren't in your conventions. Triage:
+- **Act on:** anything in the security checklist; correctness claims you can reproduce; missing-test-coverage flags.
+- **Ignore/defer:** subjective style not in a locked convention; "consider extracting this" refactors mid-hotfix; findings the tool rates low-confidence and you can't reproduce.
+- **Never** let the AI *add* the `Reviewed-by:` trailer on its own authority. **You** confirm the report, then the trailer goes on — the trailer means *you* ran the gate, the AI was an input. (This mirrors the [authorship rule](./commit-cadence.md#agent-attribution-co-authored-by): the accountable human owns the line.)
+
+**Dogfood note:** this very chapter was reviewed with exactly this loop — Claude Code as reviewer, this checklist as the rubric — which is the bar the brief set: the checklist has to work when the reviewer is an agent.
+
+## Innovative pattern: review delegation skill
+
+Wrap the loop above in a `/review-pr <number>` skill (a [task skill](./wrap-and-resume.md#the-wrap-skill) with `disable-model-invocation: true`) that fetches the diff, runs each checklist item, reports findings, and — *after you confirm* — adds the `Reviewed-by:` trailer and pushes. You confirm the report; the skill handles the mechanics.
 
 ## Related
 
 - [Commit cadence](./commit-cadence.md) — when the trailer is added
 - [Chapter 03 — Agent rules](../03-claude-code-as-operator/agent-rules.md) — agent review patterns
 - [Chapter 05 — Git signing](../05-secrets-and-secure-defaults/git-signing.md) — separate but related discipline
+- [Hook and script examples](./hook-and-script-examples.md) — the pre-push trailer-check hook in full
+
+---
+
+[⁶]: Will Larson, "How to create software quality" — https://lethain.com/quality/ — accessed 2026-05-31. (Team review is often fast but low-signal; structure beats good intentions.)
+[⁷]: The Linux Kernel, "Submitting patches: the essential guide" — https://docs.kernel.org/process/submitting-patches.html — accessed 2026-05-31. Reviewer's Statement of oversight and the Signed-off-by/Reviewed-by/Tested-by/Acked-by ladder.
+[⁸]: `git interpret-trailers` and `git commit --trailer` — https://git-scm.com/docs/git-interpret-trailers — accessed 2026-05-31.
+[⁹]: `anthropics/claude-code-security-review` (the `/security-review` command + GitHub Action) — https://github.com/anthropics/claude-code-security-review ; Claude Code code-review docs — https://code.claude.com/docs/en/code-review — accessed 2026-05-31.
