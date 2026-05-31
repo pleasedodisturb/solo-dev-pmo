@@ -46,6 +46,8 @@ If those don't describe you, this probably isn't for you.
 | 05 | [Secrets and secure defaults](./05-secrets-and-secure-defaults/) | ✓ | Secrets via password manager CLI, SSH agent, never-commit-secrets, signing |
 | 06 | [Session discipline](./06-session-discipline/) | ✓ | Commit cadence, PR review standard, audit + conventions pattern, /wrap and /resume |
 | 07 | [Cheatsheets and living docs](./07-cheatsheets-and-living-docs/) | ✓ | `cheat <topic>` system, cheatsheet maintenance discipline |
+| 08 | Agent safety | planned (P08) | Threat model, agent hardening (audit/firewall/secret-guard), session isolation (tmux + sandbox-exec + containers), cloud-session sandbox |
+| 09 | Token economy | planned (P09) | Caching + batch, model routing, prompt compression, cost tracking — stacked-pipeline cost discipline |
 
 Every chapter is substantive (README + sub-topics + field-tested gotchas + innovative patterns). Open issues / PRs welcome for new chapters or depth-expansion of existing ones.
 

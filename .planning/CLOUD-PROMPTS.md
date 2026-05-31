@@ -304,6 +304,84 @@ When done: mark the PR ready for review and summarize in the PR body what shippe
 
 ---
 
+## P08 — Agent safety (greenfield chapter)
+
+This chapter does NOT exist in the repo yet. You're creating it from scratch. Same-tier prior art = the user's own `llm-safe-haven` and `terminal-craft` repos, cited alongside external alternatives (not elevated above them).
+
+```
+You are picking up phase P08 of the solo-dev-pmo playbook — a GREENFIELD chapter creation phase.
+
+Read in this order:
+  1. .planning/HANDOFF.md                          ← startup contract (READ FIRST)
+  2. .planning/PROJECT.md                          ← project + milestone context
+  3. .planning/ROADMAP.md                          ← where P08 fits
+  4. .planning/SEARCH-PLAYBOOK.md                  ← shared search recipes
+  5. .planning/08-agent-safety/RESEARCH.md         ← YOUR ASSIGNMENT
+  6. 05-secrets-and-secure-defaults/* + 03-claude-code-as-operator/agent-rules.md  ← adjacent chapters; you cross-link, do not duplicate
+
+Then read the two user repos that this chapter is grounded in (same-tier prior art, NOT elevated above external alternatives):
+  - github.com/pleasedodisturb/llm-safe-haven    (hardening; published npm tool)
+  - github.com/pleasedodisturb/terminal-craft    (session isolation; Ghostty+tmux+CC workspace)
+
+Then execute the brief per its §5 "Output requirements" and §7 "Stop conditions". You are CREATING new files in 08-agent-safety/ — no existing chapter content to preserve.
+
+Cloud-specific notes:
+- Linear: use mcp__plugin_linear_linear__* MCP only if needed.
+- Secrets: don't try rbw — none needed for this phase.
+- Branch: P08/<short-description>. Open a draft PR on first meaningful commit.
+- Every commit must end with the Co-Authored-By trailer per .planning/HANDOFF.md.
+- NEVER commit to main directly. NEVER force-push.
+- DO position the user's repos as same-tier prior art in alternatives tables — cite alongside external tools, do NOT promote as canonical.
+- DO be honest where "sandbox-shaped" things (tmux) are NOT actually security boundaries.
+
+Effort estimate: M (6–9 hrs research + 5–7 hrs writing).
+Biggest risk per the brief's §7: llm-safe-haven appears unmaintained, or Claude Code shipped first-party hardening that obsoletes its value. Surface honestly.
+
+When done: mark the PR ready for review and summarize what shipped vs what was hedged.
+```
+
+---
+
+## P09 — Token economy (greenfield chapter)
+
+Same shape as P08 — greenfield, drawing on the user's `awesome-llm-token-optimization` as same-tier prior art (alongside other awesome-lists), but reaching directly to vendor primary docs for substance.
+
+```
+You are picking up phase P09 of the solo-dev-pmo playbook — a GREENFIELD chapter creation phase.
+
+Read in this order:
+  1. .planning/HANDOFF.md                          ← startup contract (READ FIRST)
+  2. .planning/PROJECT.md
+  3. .planning/ROADMAP.md
+  4. .planning/SEARCH-PLAYBOOK.md
+  5. .planning/09-token-economy/RESEARCH.md        ← YOUR ASSIGNMENT
+  6. 03-claude-code-as-operator/agent-rules.md     ← cross-link target (cost/cache subsection already exists there); do NOT duplicate
+
+Then read the user repo this chapter is grounded in (same-tier prior art, NOT a substitute for vendor primary docs):
+  - github.com/pleasedodisturb/awesome-llm-token-optimization    (14-section curated catalog)
+
+Then reach for vendor primary docs directly: docs.anthropic.com, openai.com/docs, ai.google.dev, api-docs.deepseek.com.
+
+Execute the brief per its §5 "Output requirements" and §7 "Stop conditions". You are CREATING new files in 09-token-economy/.
+
+Cloud-specific notes:
+- Linear: not needed for this phase.
+- Branch: P09/<short-description>. Open a draft PR early.
+- Every commit must end with the Co-Authored-By trailer per .planning/HANDOFF.md.
+- NEVER commit to main directly. NEVER force-push.
+- DO cite the user's awesome-list as same-tier prior art (alongside other awesome-lists), not as the canonical source — pull substance from vendor docs directly.
+- DO quote PERCENT discounts (sticky), NOT dollar amounts (stale fast). Link to live pricing pages.
+- DO be honest about quality regressions from routing/compression — every such pattern needs an eval gate.
+- DO derive the "stacked 95-99% reduction" math honestly; if it doesn't hold, present the real number.
+
+Effort estimate: M (6–9 hrs research + 5–7 hrs writing).
+Biggest risk per the brief's §7: vendor pricing model change during research (Anthropic dropping cache discount, OpenAI raising batch). Surface; don't embed stale figures.
+
+When done: mark the PR ready for review and summarize what shipped vs what was hedged.
+```
+
+---
+
 ## After all phases ship
 
 Run locally:
