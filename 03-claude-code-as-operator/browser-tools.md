@@ -113,6 +113,35 @@ Connection is fragile (extension disconnects mid-test); have a fallback plan.
 | Lightpanda | no | no | no | very low | server-rendered bulk |
 | BrowserMCP | yes (real Chrome) | inherits | partial | host-only | authenticated host |
 
+## 2026 landscape refresh (Q03.12–Q03.17)
+
+*Checked 2026-05-31.* Two things changed enough to update the chapter.
+
+**The detection axis moved again: post-quantum TLS.** JA3 is effectively dead (Chrome randomizes extension order; JA4 sorts before hashing and is randomization-resistant), and **JA4+ is the 2026 standard** — DataDome adopted it, Cloudflare/Akamai layer it under behavioral + token challenges.[¹] The "TLS fingerprinting dominates" claim now has a primary citation: a 2026 paper classifies bot-vs-human on JA4 features alone at **CatBoost AUC 0.998 / F1 0.97**[²] (research-grade, not a vendor stat). The *new* tell is **post-quantum**: ~57% of real browser connections now carry an `X25519MLKEM768` key share, and Akamai made PQ default for origin connections in Jan-2026 — so a client claiming modern Chrome but **missing the PQ key share is a pre-HTTP red flag**.[³] This *widens* the gap for pinned-fingerprint impersonation libs, not narrows it.
+
+**Tool maintenance matrix** (verify before adopting — these move monthly):
+
+| Tool | State 2026-05-31 | Note |
+|---|---|---|
+| `primp` | active (v1.3.1) | request-level TLS/JA4 impersonation; no JS[⁴] |
+| `curl-impersonate` (lwthiker) | **stale** (v0.6.1, 2024-03) | superseded → |
+| `curl_cffi` (lexiforest) | **active** (v0.15.x) | the live curl-impersonate line; best non-JS TLS impersonation[⁵] |
+| Patchright | active (v1.60) | undetected Playwright drop-in; patches CDP, not a JS shim[⁶] |
+| Camoufox | active (v150, new maintainers) | Firefox, C++-level spoofing; leading **open-source** anti-detect[⁷] |
+| nodriver | active | successor to undetected-chromedriver; CDP-direct[⁸] |
+| rebrowser-patches | maintained | fixes the `runtime.enable` CDP leak shims miss[⁹] |
+| playwright-stealth / puppeteer-extra-stealth | Python active / **Node stagnant** | JS shims; still fail CreepJS-grade adversaries |
+
+Net: **Python > Node for stealth in 2026.** The chapter's `playwright-stealth`-is-a-shim warning still holds; Patchright/Camoufox/nodriver are the real-engine answers below it.
+
+**Status corrections to the tier list:**
+- **Obscura** (#5) is real and active (`h4ckf0r0day/obscura`, ~14k★) but a **young 0.1.x single-maintainer** project — keep the ranking, but treat it as promising-not-battle-tested.[¹⁰]
+- **CloakBrowser** (#6) active (v0.3.31, Chromium 146; 58 C++ patches). Precision: the **wrapper is MIT, the patched Chromium is binary-only** — "closed-source" is right in spirit. The **open-source equivalent is Camoufox** (Firefox-based, full source).[⁷][¹¹]
+- **Firecrawl** (#7) is AGPL-3.0 with a free tier (~1k credits/mo); **self-host is a subset** — `/agent` and `/browser` and the managed anti-bot proxy network are cloud-only, so self-hosted Firecrawl is weak on hard targets.[¹²]
+- **Lightpanda** (#8) actively developed but still beta: runs simple JS, **still not reliable for heavy React/SPA**. New engines to watch: **Servo** shipped an embeddable crate + headless `servo-shot` (Apr-2026); **Ladybird** targets first alpha Jul-2026 (not yet usable for scraping).[¹³]
+
+**Verdict:** "JA3/JA4 dominant, real-browser-only for hard targets" holds *more firmly* in 2026 — PQ-TLS widened the gap. Refinement: impersonation libs (`curl_cffi`, `primp`) are excellent for **soft / non-JS / API-style targets, but only if kept PQ-TLS-current**; hard, actively-defended targets remain real-Chrome/Firefox-only.
+
 ## Recipes — "if you're trying to X, use Y"
 
 - **Reading static HTML from a public page** → WebFetch (cheapest, 20× more efficient)
@@ -135,7 +164,7 @@ Connection is fragile (extension disconnects mid-test); have a fallback plan.
 
 **Never `--stealth` Obscura on macOS.** Sec-CH-UA-Platform-* client hints leak the real OS.
 
-**TLS fingerprinting (JA3/JA4) is the dominant axis in 2025–2026, not JS.** A 2026 paper reports AUC 0.998 for bot/human classification on JA4 features alone. For hard targets (Cloudflare/Akamai/DataDome), real Chrome via BrowserMCP or CloakBrowser is the only safe option.
+**TLS fingerprinting (JA3/JA4) is the dominant axis in 2025–2026, not JS.** A 2026 paper reports AUC 0.998 for bot/human classification on JA4 features alone[²]; by 2026 post-quantum TLS is an additional pre-HTTP tell (see [2026 refresh](#2026-landscape-refresh-q0312q0317)). For hard targets (Cloudflare/Akamai/DataDome), real Chrome via BrowserMCP or CloakBrowser is the only safe option.
 
 **Headless-vs-headful JS detection is essentially over.** Chromium's new headless reached fingerprint parity mid-2025. `playwright-stealth` is a JS shim and does not pass CreepJS-grade adversaries.
 
@@ -174,3 +203,20 @@ Hook on PreToolUse blocks any browser tool call to a matched URL. Hard guard.
 - [MCP routing](./mcp-routing.md) — the bigger routing picture
 - [Memory architecture](./memory-architecture.md) — browser tools don't write to memory; results go to context only
 - [Chapter 05 — Secrets](../05-secrets-and-secure-defaults/) — why never browser tools on credential pages
+- [sources.md](./sources.md) — full bibliography
+
+---
+
+[¹]: https://packet.guru/blog/TLS-Fingerprinting-JA3-JA4 ; https://www.startertutorials.com/blog/bypassing-datadome-in-2026-the-ultimate-engine-level-guide.html — accessed 2026-05-31
+[²]: "When Handshakes Tell the Truth: Detecting Web Bad Bots via TLS Fingerprints," arXiv:2602.09606 (2026-02-10) — accessed 2026-05-31
+[³]: https://scrapfly.io/blog/posts/post-quantum-tls-bot-detection ; https://chromestatus.com/feature/5257822742249472 — accessed 2026-05-31
+[⁴]: https://github.com/deedy5/primp — accessed 2026-05-31
+[⁵]: https://github.com/lexiforest/curl_cffi (active fork of https://github.com/lwthiker/curl-impersonate) — accessed 2026-05-31
+[⁶]: https://github.com/Kaliiiiiiiiii-Vinyzu/patchright — accessed 2026-05-31
+[⁷]: https://github.com/daijro/camoufox — accessed 2026-05-31
+[⁸]: https://github.com/ultrafunkamsterdam/nodriver — accessed 2026-05-31
+[⁹]: https://github.com/rebrowser/rebrowser-patches — accessed 2026-05-31
+[¹⁰]: https://github.com/h4ckf0r0day/obscura — accessed 2026-05-31
+[¹¹]: https://github.com/CloakHQ/CloakBrowser — accessed 2026-05-31
+[¹²]: https://github.com/mendableai/firecrawl ; https://filipkonecny.com/2026/03/29/firecrawl-limitations/ — accessed 2026-05-31
+[¹³]: https://github.com/lightpanda-io/browser ; https://servo.org/ ; https://ladybird.org/ — accessed 2026-05-31
