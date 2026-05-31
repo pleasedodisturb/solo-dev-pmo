@@ -51,6 +51,8 @@ Continuous-area projects stay **Started** permanently. They never go Paused, bec
 
 If you have more than 3 push projects in flight, your cycle plan won't land. You'll either spread thin across all 3 or completely abandon some.
 
+**The math behind low caps.** This isn't just vibes — it's Kanban. David J. Anderson's foundational rule: a system without an explicit WIP limit "is not a kanban system."[¹] The reason caps work is Little's Law — *cycle time = WIP ÷ throughput* — so at a fixed throughput, cutting WIP cuts how long each item takes to finish (and cutting it too far starves throughput).[²] Anderson also reports an empirical heuristic that "two items in progress per knowledge worker" tends to be optimal.[¹] For a *solo* dev that implies a very low cap; ≤3 push projects + ≤5 issues/cycle sits squarely in that range. Henrik Kniberg frames the *why*: WIP limits exist "to avoid too much multitasking" and to "force you to deal with bottlenecks."[³] No source gives an exact formula — Atlassian's own guidance is that choosing the number is heuristic (a common start is "team members + 1").[⁴] So: principle is load-bearing literature; the specific 3/5 numbers are the author's calibration for solo + 1-week cycles.
+
 ## Detecting cap breaches
 
 Linear doesn't enforce caps. You build the detection.
@@ -142,6 +144,25 @@ Rationale: solo + 1-week cycle + 5 issue cap = you can either do 5 small things 
 Exception: blocked-on-external work. If you're blocked on the lead project (waiting on an external response), you swap to the secondary push for the duration.
 
 Track the lead rotation in a `cycles.md` conventions file: which cycle was lead by which project. Look back monthly — projects that never rotate to lead aren't actually in-cap.
+
+## What this rules out
+
+- **No silent auto-pause to "stay under cap."** The cap exists to *surface a decision* (pause or proceed); auto-pausing hides the breach. Manual only.
+- **No counting continuous areas against the cap.** A naive "≤3 started projects" audit that ignores the push/continuous split will false-positive every time. Write the exemption into your conventions doc.
+- **No using WIP cap to control issue volume or busyness.** That's [snooze](./snooze-as-hibernation.md) and [estimates](./estimates-exponential.md) territory. The cap does one job: the start-a-new-push decision.
+
+## Field tests beyond the author
+
+The WIP-limit *principle* is among the best-validated ideas in this chapter — Anderson's Kanban Method, Little's Law, and Kniberg's flow argument are all external and load-bearing.[¹][²][³] What's *not* externally validated is the specific "3 push projects + continuous-area exemption" formulation for a solo dev — that split is the author's, and we found no published source distinguishing "push" from "continuous-area" projects under a WIP cap. Honest status: the math is borrowed and solid; the solo-specific exemption rule is author-original and field-tested at one engineer's scale.
+
+## Sources
+
+External quotes gathered via web search 2026-05-31 (Anderson lines via a quote aggregator of his 2010 book — spot-check before reuse). Full notes in [`sources.md`](./sources.md).
+
+- [1]: David J. Anderson, *Kanban: Successful Evolutionary Change for Your Technology Business* (2010); Kanban Method practices — https://djaa.com/revisiting-the-principles-and-general-practices-of-the-kanban-method/ ; quotes https://www.goodreads.com/work/quotes/12821559 — accessed 2026-05-31
+- [2]: Little's Law applied to Kanban (cycle time = WIP ÷ throughput) — https://getnave.com/blog/kanban-littles-law/ — accessed 2026-05-31
+- [3]: Henrik Kniberg & Mattias Skarin, *Kanban and Scrum — Making the Most of Both* (2010) — https://www.infoq.com/minibooks/kanban-scrum-minibook/ — accessed 2026-05-31
+- [4]: Atlassian, *Working with WIP limits for kanban* — https://www.atlassian.com/agile/kanban/wip-limits — accessed 2026-05-31
 
 ## Related
 
