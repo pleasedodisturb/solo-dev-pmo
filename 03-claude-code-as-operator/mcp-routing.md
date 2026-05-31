@@ -21,6 +21,22 @@ Pick the **simplest tool that can do the job.**
 | A specialized MCP for the task | The specialized MCP, not a general-purpose one. |
 | Nothing in the catalog | Use the closest specialized MCP and document the gap. |
 
+*Checked 2026-05-31 against Claude Code v2.1.158.*
+
+## The 2026 MCP catalog (Q03.18)
+
+The official **reference** servers shrank to seven — maintained by the MCP steering group, in `modelcontextprotocol/servers`: **Everything** (test server), **Fetch**, **Filesystem**, **Git**, **Memory** (knowledge graph), **Sequential Thinking**, **Time**.[¹] The rest were **archived and re-launched vendor-maintained**: GitHub → `github/github-mcp-server`, Slack, Postgres, Sentry, Brave, etc. now live with their vendors, not Anthropic.[¹]
+
+Discovery in 2026: the **Anthropic Directory** (`claude.ai/directory`) lists reviewed connectors you add with `claude mcp add`; an official **registry** (`registry.modelcontextprotocol.io`) is in preview.[²] The community `punkpeye/awesome-mcp-servers` catalog still covers the long tail. Ten worth knowing: Filesystem, Git, Fetch, Memory, Sequential Thinking (reference); GitHub, Linear, Playwright (Microsoft), Zapier, n8n (vendor/community).
+
+> **Cross-chapter flag (do not silently edit ch01):** Linear now ships an **official first-party MCP** at `https://mcp.linear.app/mcp` (OAuth 2.1, Streamable HTTP, 25+ read+write tools).[³] Chapter 01's "CLI > MCP locally" rule was written before this existed. It still holds *locally* (the CLI has no per-session context tax — see below), but the cloud-session rationale ("the MCP is for environments without CLI access") is now backed by a vendor-supported server, not a community one. Flagged for a ch01 reconciliation pass.
+
+## When the CLI wins over an MCP (Q03.19)
+
+The chapter's "CLI > MCP locally" rule now has hard numbers behind it. Anthropic's *Code execution with MCP* reports a five-server setup with **58 tools consumes ~55K tokens before the conversation starts**, and re-expressing those servers as code APIs the agent calls dropped one workflow from **~150,000 to ~2,000 tokens (≈98.7%)**.[⁴] Every loaded MCP server pays a per-session context tax whether or not you use it; a CLI invoked through Bash costs **zero standing tokens**, is deterministic/composable (pipes, exit codes), and the agent already knows shell idioms.
+
+Claude Code now mitigates the tax itself: **MCP Tool Search defers tool definitions** — only tool *names* load at session start, full defs expand on demand.[⁵] So the routing rule sharpens to: **CLI for anything you'd script; MCP when you need OAuth, remote state, or a typed contract `--help` can't give you** — and let Tool Search handle the context cost of the MCPs you do enable.
+
 ## Browser tools
 
 Top-line: WebFetch > Playwright MCP > specialized browser MCPs.
@@ -96,7 +112,7 @@ Don't use when:
 
 Why: MCP bypasses team filters, rate-limit guards, and CLI caches. Local sessions have access to the CLI; using the MCP creates inconsistency between local and cloud sessions.
 
-**Cloud sessions** (where the CLI isn't installed): the MCP is fine. That's its intended use.
+**Cloud sessions** (where the CLI isn't installed): the MCP is fine. That's its intended use. As of 2026 that MCP is Linear's own first-party server (`mcp.linear.app`),[³] not a third-party plugin — so the cloud path is now vendor-supported.
 
 This rule generalizes: for any tool with both a CLI and an MCP, prefer the CLI locally. The MCP is for environments without CLI access.
 
@@ -137,36 +153,17 @@ For "I want clean markdown from 100 public pages," Firecrawl is the cleanest. Fo
 | Cloudflare-gated target | CloakBrowser (sandbox) | (no safe fallback) |
 | Clean markdown extraction | Firecrawl | Playwright + manual markdown |
 
+## New MCP categories worth a routing rule (Q03.20)
+
+Three categories matured since the chapter was written:
+
+- **Vision / screenshot** — Playwright MCP's *Vision Mode* adds coordinate/screenshot interaction for elements not in the accessibility tree.[⁶] Rule: reach for it **only when DOM/a11y selectors fail**.
+- **Memory / vector** — `mem0` and the reference Memory (knowledge-graph) server back semantic, cross-session recall. Rule: Layer-4 only — **cross-session personalization, never "read a file."**
+- **Workflow automation** — Zapier MCP (8,000+ app actions) and n8n MCP trigger existing automations with params. Rule: use to reach a SaaS you'd otherwise hand-integrate; don't rebuild a workflow the agent could call.
+
 ## Versioning your MCP registry
 
-Maintain a `~/.claude/MCP_REGISTRY.md` listing every MCP, status (enabled/disabled), and routing notes.
-
-Update when:
-- You add or remove an MCP
-- You toggle one on/off
-- Routing rules change
-
-The registry IS the source of truth for "what MCPs do I have?" When debugging "why isn't tool X available," the registry is where you check.
-
-Sample structure:
-```markdown
-# MCP Registry
-
-## Always-on (global)
-- memory — cross-project memory (Layer 4)
-- context7 — library docs
-- playwright — primary browser driver
-
-## Per-project (.mcp.json)
-- ynab (in Money repo only) — YNAB CRUD
-- pm-tool-mcp (in tools repos) — TickTick read
-
-## Disabled
-- google-calendar — disabled per calendar-neutrality principle (see chapter 00)
-
-## Deferred
-- skyvern — wiring pending login
-```
+Maintain a `~/.claude/MCP_REGISTRY.md` listing every MCP, status (enabled/disabled), and routing notes. Update when you add/remove/toggle one or change a routing rule. The registry IS the source of truth for "what MCPs do I have?" — when debugging "why isn't tool X available," check it first. Group by Always-on (global) / Per-project (`.mcp.json`) / Disabled / Deferred.
 
 ## Field-tested gotchas
 
@@ -212,4 +209,14 @@ Single command, smart fallback. The agent never has to think about routing for t
 
 - [Browser tools](./browser-tools.md) — full ranked browser routing
 - [Agent rules](./agent-rules.md) — when to spawn an agent (separate decision)
-- [Chapter 01 — I/O rules](../01-linear-as-load-bearing-pm/io-rules.md) — Linear-specific CLI > MCP rule
+- [Chapter 01 — I/O rules](../01-linear-as-load-bearing-pm/io-rules.md) — Linear-specific CLI > MCP rule (see official-MCP flag above)
+- [sources.md](./sources.md) — full bibliography
+
+---
+
+[¹]: https://github.com/modelcontextprotocol/servers and https://github.com/modelcontextprotocol/servers-archived — accessed 2026-05-31
+[²]: https://code.claude.com/docs/en/mcp (Anthropic Directory, `claude.ai/directory`); https://blog.modelcontextprotocol.io/posts/2025-09-08-mcp-registry-preview/ — accessed 2026-05-31
+[³]: https://linear.app/docs/mcp and https://linear.app/changelog/2025-05-01-mcp — accessed 2026-05-31
+[⁴]: https://www.anthropic.com/engineering/code-execution-with-mcp — accessed 2026-05-31
+[⁵]: https://code.claude.com/docs/en/mcp — accessed 2026-05-31
+[⁶]: https://playwright.dev/mcp/vision-mode — accessed 2026-05-31
