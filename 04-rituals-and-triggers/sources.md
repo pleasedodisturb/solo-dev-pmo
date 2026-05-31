@@ -1,5 +1,6 @@
 # Sources — Chapter 04: Rituals and triggers
 
+Chapter-root reference file: bibliography + version matrix + field-test notes.
 Bibliography rollup for the chapter. All accessed **2026-05-31**. Class per the
 [SEARCH-PLAYBOOK](../.planning/SEARCH-PLAYBOOK.md) weighting: ★★★★★ primary docs,
 ★★★★ vendor/eng blog or peer-reviewed, ★★★ practitioner/adjacent, ★★ community.
@@ -82,3 +83,50 @@ Bibliography rollup for the chapter. All accessed **2026-05-31**. Class per the
 - **"10-min / 16:00 / 5-min"** cadences are labeled author preference; only the *short-fixed-timebox*, *weekly-Friday (Linear)*, and *cooldown (Shape Up)* shapes are presented as defensible.
 - **"Every-4th-week cooldown"** flagged as an adaptation of Shape Up's 2-weeks-per-6.
 - **macOS plists / ntfy curl recipes** are written-but-untested against live launchd / a live device this pass; the `md→ics` exporter **was** run and verified.
+
+## Version matrix (as of 2026-05-31)
+
+| Tool | Version | Notes |
+|---|---|---|
+| macOS | Sequoia 15.x | launchd patterns target this; `bootstrap`/`bootout` since macOS 11 |
+| systemd | distro-dependent | `Persistent=` available since v212; `OnCalendar=` widely shipped |
+| ntfy server | 2.23.0 (2026-05-17) | Apache-2.0; hosted or self-host |
+| ntfy Android app | ~1.24.0 | `io.heckel.ntfy`; F-Droid build ships without FCM — *version search-extracted, verify* |
+| ntfy iOS app | App Store id 1625396347 | build number not confirmable from this env |
+| `icalendar` (Python) | 7.1.2 (2026-05-22) | Production/Stable — **the one we use** |
+| `ics.py` (Python) | 0.7.3 (2026-04-15) | beta, weak on recurrence — **not used** |
+| Pushover | one-time ~$5/platform | proprietary; verify live |
+| Gotify | (MIT) | no first-party iOS app |
+
+## Field tests beyond the author
+
+What has external validation, and what doesn't:
+
+- **launchd / systemd missed-run-on-wake** — *vendor-documented behavior*, not an
+  author claim: `launchd.plist(5)` and `systemd.timer(5)` both specify it. Solid.
+- **ntfy + UnifiedPush on GrapheneOS** — corroborated beyond the author by multiple
+  2026 GrapheneOS forum threads and independent practitioner write-ups
+  (davd.io, eugenemdavis.net). The GrapheneOS path is field-confirmed.
+- **org-mode `ox-icalendar`** — decades-proven text→iCalendar prior art; our
+  `md→ics` exporter is a thin re-implementation of a well-trodden pattern.
+- **Honest gap:** the specific *cadences* (10-min triage, 15-min Monday, 5-min
+  Friday, every-4th-week cooldown) have **no independent field validation** beyond
+  the author plus the general timeboxing / Shape Up literature. They are presented
+  as defensible *shapes* with author-chosen *numbers*, not measured optima. The
+  plists and curl recipes have not been independently re-run by a third party.
+
+## What we'd change in 2026
+
+- **Lead with `bootstrap`/`bootout`/`kickstart`**, not the legacy `load`/`unload`
+  most older docs still show.
+- **Use the `icalendar` library**, not a hand-rolled emitter or `ics.py` — it gets
+  CRLF/folding/VTIMEZONE right, which is where Google silently drops feeds.
+- **Add a GitHub Actions `on: schedule` option** for stateless/cloud rituals that
+  shouldn't depend on the laptop being awake — a path the original macOS-only
+  framing didn't offer.
+- **Don't trust ntfy priority to pierce iOS Focus yet** — wire the manual Focus
+  allowlist and revisit when ntfy issue #1680 ships.
+- **Prefer UnifiedPush-first routing** on Android/GrapheneOS over a direct ntfy
+  socket, for battery.
+- **Emit `REFRESH-INTERVAL` + `X-PUBLISHED-TTL`** on published `.ics` rather than
+  hoping clients poll on a useful interval.
