@@ -8,6 +8,8 @@ The agentic-coding tool gives you two execution modes:
 
 Choosing between them is the highest-leverage agent decision. Get it wrong and you either burn tokens on coordination (over-spawning) or burn tokens on context bloat (under-spawning).
 
+*Checked 2026-05-31 against Claude Code v2.1.158.* The spawning tool was **renamed `Task` → `Agent` in v2.1.63** (old `Task(...)` still aliases).[¹] A subagent "starts with a fresh, isolated context window — it does not see your conversation history, the skills you've invoked, or the files Claude has read," and only a summary returns to the parent, leaving the parent's cache prefix intact.[¹] Subagents **cannot spawn subagents.** Built-ins worth knowing: **Explore** (Haiku, read-only, skips CLAUDE.md to stay small), **Plan** (read-only), **general-purpose** (all tools). Per-subagent `model:` accepts `sonnet|opus|haiku|inherit` (default inherit); **foreground blocks and forwards permission prompts to you, background runs concurrently and auto-denies anything that would prompt.**[¹]
+
 ## When to spawn a subagent
 
 Spawn when:
@@ -66,6 +68,29 @@ Use specialized agents when their name matches the task; reach for a generic Tas
 - **Batch non-urgent work** via Batch API (50% discount) — discovery sweeps, bulk scoring.
 - **Open-source models via Together.ai** for simple tasks — no middleman markup.
 - **Capture token usage from every API response** — when writing or modifying provider code, extract and pass through `TokenUsage` (input/output/cache tokens).
+
+## Subagent economics (Q03.25)
+
+There is **no documented hard per-subagent token cap** — guidance is proportional, not a fixed budget.[¹] The numbers that matter:
+
+- Anthropic's multi-agent research system used **~15× more tokens than a single chat**, and **token usage alone explained ~80% of the performance variance** on their eval — spawning helps when "the question is large, the directions are independent, and the answer is worth a lot of tokens."[²]
+- Claude Code's own docs measure **agent teams at ~7× the tokens** of a standard session, because each teammate keeps its own context window.[³]
+
+So the spawn decision is an economic one: parallelism buys wall-clock and isolation but costs a multiple of the tokens. Defaults that keep it sane: **Sonnet (or Haiku) for teammates, not Opus; keep teams small (cost ≈ team size); focused spawn prompts** (teammates auto-load CLAUDE.md + MCP + skills, so a fat global config taxes every spawn); clean up idle teammates. `maxTurns` in agent frontmatter is the indirect cap.[¹] These are the evidence behind the chapter's S/M/L heuristics below, not replacements for them.
+
+## Cost and cache-hit accounting (Q03.26–Q03.27)
+
+You can't optimize spawn economics without measuring them. The 2026 toolchain:
+
+- **`/usage`** (the `/cost` successor) shows per-session tokens + a local dollar estimate, and on paid plans **attributes spend to individual skills, subagents, plugins, and MCP servers** as percentages.[³]
+- **OpenTelemetry** (`CLAUDE_CODE_ENABLE_TELEMETRY=1`) exports `claude_code.cost.usage` and `claude_code.token.usage` broken down by `skill.name` / `plugin.name` / `agent.name` — the org-wide path.[⁴]
+- **Admin API** (`/v1/organizations/cost_report`, `/usage_report/claude_code`) for per-user aggregates; **`ccusage`** parses local JSONL logs with no API access.[⁴]
+
+**Cache-hit hygiene is the cheapest cost lever.** Claude Code caches automatically with the stable-prefix order *system prompt → CLAUDE.md + memory → conversation*; an exact-prefix match is required, so anything that changes an early block recomputes everything after it.[⁵] **Helps:** pick model, effort level, and MCP servers at session *start*; save `/compact` for natural breaks; use `/rewind` (truncates to a cached prefix). **Hurts:** switching model/effort mid-session, MCP connect/disconnect, `/compact`, upgrading Claude Code. Watch `cache_read_input_tokens` (~0.1× rate) vs `cache_creation_input_tokens` in a statusline — a high read:creation ratio is healthy.[⁵] Editing CLAUDE.md mid-session is cache-safe but **won't take effect until restart/compact.**[⁵]
+
+## Subagents in other tools (Q03.21)
+
+Not every operator agent has this lever. **Codex** has subagents and **Cursor** has cloud Background Agents; **Aider, Cline, and Continue are single-context** — there the "spawn vs inline" decision collapses to "always inline," so you manage main-context bloat by hand. Full matrix in [agent-platform-portability](./agent-platform-portability.md).
 
 ## Worktree / branching rules
 
@@ -159,5 +184,15 @@ Aggregate weekly. Identify expensive-vs-cheap agent patterns. Cost optimization 
 
 - [MCP routing](./mcp-routing.md) — which tools agents use
 - [Skills and hooks](./skills-and-hooks.md) — how agents are invoked
+- [Agent-platform portability](./agent-platform-portability.md) — subagent models in other tools
 - [Chapter 06 — Session discipline](../06-session-discipline/) — what agents commit and how
 - [Chapter 01 — Ticket standard](../01-linear-as-load-bearing-pm/ticket-standard.md) — Execution Metadata feeds agent decisions
+- [sources.md](./sources.md) — full bibliography
+
+---
+
+[¹]: https://code.claude.com/docs/en/sub-agents — accessed 2026-05-31
+[²]: https://www.anthropic.com/engineering/multi-agent-research-system — accessed 2026-05-31
+[³]: https://code.claude.com/docs/en/costs — accessed 2026-05-31
+[⁴]: https://code.claude.com/docs/en/monitoring-usage ; https://platform.claude.com/docs/en/api/admin/cost_report — accessed 2026-05-31
+[⁵]: https://code.claude.com/docs/en/prompt-caching — accessed 2026-05-31
