@@ -4,15 +4,24 @@
 
 This chapter is the affordance layer for time. Monday planning, Friday retro, morning Triage — all of it triggered mechanically, not by willpower.
 
+> **Tested on:** macOS Sequoia (15.x) `launchd` semantics + Linux `systemd`
+> timers. The plists and `curl` recipes here were written and structurally
+> validated but **not run against live launchd / a live ntfy device** in this
+> research pass — verify locally before depending on them. **Not on macOS?** Use
+> the [Linux systemd variant](./linux-systemd-variant.md); the scripts are
+> identical.
+
 ## What this chapter covers
 
 | Section | What it solves |
 |---|---|
-| [launchd over cron](./launchd-over-cron.md) | Time triggers that survive sleep and machine restarts |
+| [launchd over cron](./launchd-over-cron.md) | Time triggers that survive sleep and machine restarts (macOS) |
+| [Linux systemd variant](./linux-systemd-variant.md) | The same triggers as systemd user timers (Linux) |
 | [ntfy notifications](./ntfy-notifications.md) | Push without Apple/Google. Works on GrapheneOS. |
 | [Plaintext time layer](./plaintext-time-layer.md) | `schedule.md` as the canonical schedule. iCal export when needed. |
 | [Monday planning ritual](./monday-planning.md) | Trigger + script that prepares your week |
 | [Friday retro ritual](./friday-retro.md) | Companion to Linear Project Update reminders |
+| [Ritual fatigue](./ritual-fatigue.md) | Detecting and countering a ritual that's being ignored |
 
 ## The framing
 
@@ -87,3 +96,4 @@ From [00 — ADHD-aware design](../00-principles/adhd-aware-design.md):
 - [Chapter 00 — Calendar neutrality](../00-principles/calendar-neutrality.md) — why plaintext time
 - [Chapter 01 — Cycles and rituals](../01-linear-as-load-bearing-pm/cycles-and-rituals.md) — what the Monday script does to Linear
 - [Chapter 06 — Wrap and resume](../06-session-discipline/wrap-and-resume.md) — session-level rituals
+- [Sources](./sources.md) — bibliography for this chapter
