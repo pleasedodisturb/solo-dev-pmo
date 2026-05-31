@@ -21,6 +21,35 @@ Also: GitHub repo URLs preserve the original case but compare case-insensitively
 
 Pick one format. Enforce it everywhere.
 
+## These rules aren't arbitrary — every registry agrees
+
+Lowercase + hyphens + ASCII is not a personal aesthetic. Every major package registry enforces a near-identical slug:
+
+| Ecosystem | Rule | Source |
+|---|---|---|
+| npm | "all the characters in the package name must be lowercase"; url-safe; no `~)('!*`; ≤ 214 chars | [¹] |
+| PyPI (PEP 508/503) | name must match the regex below; names normalized by lowercasing + collapsing runs of `[-_.]` to one `-` | [²][³] |
+| Homebrew | "Filenames should be all lowercase" | [⁴] |
+| Docker | each image path component is `[a-z0-9]+` with limited separators — error: "repository name must be lowercase" | [⁵] |
+| GitHub repos | ASCII letters/digits + `.` `-` `_`, ≤ 100 code points, invalid sequences collapse to a single `-`, case-insensitive uniqueness | [⁶] |
+
+The two worth memorizing verbatim:
+
+```
+# PyPI PEP 508 valid name (matched with re.IGNORECASE):
+^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])$
+# PyPI PEP 503 normalization:
+re.sub(r"[-_.]+", "-", name).lower()
+```
+
+Our slug rule is deliberately *stricter* than any one registry (we forbid the `_` and `.` that npm and PyPI tolerate). The payoff: a single regex `^[a-z0-9]+(-[a-z0-9]+)*$` validates a name that is simultaneously a legal npm package, PyPI project, Homebrew formula, Docker path component, **and** GitHub repo. Live in the intersection and you never hit a registry's rejection later.
+
+## Horror story: when disk identity ≠ canonical identity
+
+The case for "disk leaf MUST equal repo name, lowercased" was written in blood by the Go ecosystem. In November 2016 the author of `logrus` renamed their GitHub account `Sirupsen` → `sirupsen`, changing the import path `github.com/Sirupsen/logrus` → `github.com/sirupsen/logrus`.[⁷] Go import paths are case-sensitive, but macOS and Windows filesystems are case-insensitive — so any project that transitively pulled *both* casings hit `case-insensitive import collision` and literally could not check both out on a Mac. The breakage cascaded through Docker CLI, `golang/dep`, Hyperledger Fabric, and dozens more, for years.[⁸]
+
+The lesson the slug rules encode: if the canonical name (registry slug, import path) and the disk leaf can disagree on case, a case-insensitive filesystem will eventually corrupt the mapping. Mandating lowercase everywhere deletes the entire bug class.
+
 ## No grandfathered TitleCase exceptions
 
 Tempting: "but I'd like `~/Projects/Money/` capitalized — it's important."
@@ -194,8 +223,20 @@ done
 
 Drift gets visible within 24 hours instead of accumulating for months.
 
+## Sources
+
+- [¹] https://github.com/npm/validate-npm-package-name — accessed 2026-05-31
+- [²] https://peps.python.org/pep-0508/ — accessed 2026-05-31
+- [³] https://peps.python.org/pep-0503/ — accessed 2026-05-31
+- [⁴] https://docs.brew.sh/Formula-Cookbook — accessed 2026-05-31
+- [⁵] https://github.com/distribution/reference — accessed 2026-05-31
+- [⁶] https://github.com/dead-claudia/github-limits — accessed 2026-05-31
+- [⁷] https://github.com/sirupsen/logrus/issues/451 — accessed 2026-05-31
+- [⁸] https://github.com/golang/dep/issues/806 — accessed 2026-05-31
+
 ## Related
 
 - [Layout B](./layout-b-subfolders.md) — the category subfolders the slugs live in
 - [Linear ↔ GitHub binding](./linear-github-binding.md) — `repo: <slug>` tag
+- [Migration recipe](./migration-recipe.md) — what to fix after a rename touches all 10 places
 - [Chapter 06 — Audit pattern](../06-session-discipline/audit-and-conventions-pattern.md) — how conventions are managed
