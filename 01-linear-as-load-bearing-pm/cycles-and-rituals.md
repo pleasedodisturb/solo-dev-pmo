@@ -43,7 +43,9 @@ With auto-roll: at midnight Sunday → Monday, in-progress work flows forward au
 
 ## Why a cooldown cycle every 4th week
 
-[Linear Cycles docs](https://linear.app/docs/use-cycles) describe cooldowns as a buffer for tech debt. For solo + ADHD, repurpose them: **the cooldown is your Friday-retro buffer at cycle scale.** Three weeks of push, one week of breathing room.
+[Linear Cycles docs](https://linear.app/docs/use-cycles) now ship cooldowns as a **native per-cycle setting** — "a cooldown period after each cycle… Issues cannot be assigned to a cooldown."[¹] For solo + ADHD, repurpose the idea: **the cooldown is your Friday-retro buffer at cycle scale.** Three weeks of push, one week of breathing room.
+
+The provenance is Basecamp's **Shape Up**, which pairs six-week build cycles with a **two-week cool-down** — "a period with no scheduled work where the team can breathe… and consider what to do next," because "the end of a cycle is the worst time to meet and plan."[²] The playbook keeps Shape Up's **1-in-4 (25%) cool-down proportion** but compresses the absolute cadence from 6+2 weeks down to 3+1, trading Shape Up's "feel the deadline" pressure for the faster feedback a 1-week cycle gives. The rationale for the cool-down — recovery, slack to plan, no scheduled work — carries over unchanged; only the rhythm scales down.
 
 What goes in cooldown:
 - Tech debt items you've been parking
@@ -58,7 +60,7 @@ Anti-pattern: skipping cooldown because you're behind on push work. The cycle af
 
 ## Why Friday 16:00 Project Update reminders
 
-[Linear Project Updates](https://linear.app/docs/initiative-and-project-updates) support workspace-wide weekly reminders. Linear's own team posts every Friday — [their blog explains why](https://linear.app/now/how-we-built-project-updates).
+[Linear Project Updates](https://linear.app/docs/initiative-and-project-updates) support workspace-wide reminders at a configurable cadence and weekday.[³] **Clean attribution (Q01.18):** the *weekly* cadence is Linear's own recommendation; *Friday specifically* is Linear's internal habit — "At Linear, we write project updates every week on Friday"[⁴] — not a product rule (the weekday is configurable; Linear's docs example even uses Wednesday). The **16:00** time is the author's choice, not Linear-attributable. So pick any weekday/time; this playbook picks Friday 16:00 because it doubles as an end-of-week retro trigger.
 
 For solo + ADHD: **the Project Update reminder IS your Friday retro trigger.**
 
@@ -122,11 +124,20 @@ Set "This week" as your default landing view (Settings → Account → Preferenc
 query { team(id: "<team-uuid>") { activeCycle { id number startsAt endsAt } } }
 ```
 
-**Project Updates have an off-by-one with the workspace timezone.** If your reminder is set for Friday 16:00 and your workspace timezone is wrong, the reminder fires Thursday or Saturday. Check Settings → Workspace → Timezone before scheduling.
+**Project Update reminders fire in the lead's local timezone.** `[2026: changed]` Current docs say reminders are sent in the project lead's local timezone and "may not be sent precisely at the chosen hour but will be delivered within the hour."[³] The old workspace-timezone off-by-one (reminder firing Thursday/Saturday) appears resolved — but still confirm your *account* timezone if a reminder lands on the wrong day.
 
-**Auto-roll silently leaves orphans for issues in `Todo` state.** Auto-roll only moves `In Progress`. A ticket you planned but never started stays in the closed cycle. Your Monday view *must* include `Cycle = previous AND State = Todo` so you see the orphans.
+**Watch the auto-roll scope for un-started issues.** `[2026: verify]` The chapter long held that auto-roll moves only `In Progress`, leaving `Todo` issues orphaned in the closed cycle. Current Cycles docs read more broadly — "Any unfinished work rolls over to the next cycle automatically," and the auto-add toggle explicitly covers "Unstarted" (Todo) statuses.[¹] The orphan gotcha may be stale. Until you've confirmed against your own workspace, keep the `Cycle = previous AND State = Todo` saved view as a cheap safety net — if it's always empty, auto-roll is handling Todo too and you can retire it.
 
 **Cycle count > 5 in current cycle while it's Monday morning is a planning failure, not a reminder to work harder.** When the cap is breached, descope. Don't try to "just push through" — you're encoding the failure mode the cap was meant to prevent.
+
+## Sources
+
+Linear claims verified via Linear's documentation-search MCP on 2026-05-31; Shape Up quotes gathered via web search (basecamp.com blocks automated fetch — spot-check before reuse). Full notes in [`sources.md`](./sources.md).
+
+- [1]: Linear, *Cycles* (native cooldowns; "any unfinished work rolls over"; auto-add Active/Unstarted/Started) — https://linear.app/docs/use-cycles — accessed 2026-05-31
+- [2]: Basecamp, *Shape Up* (Ryan Singer) — 6-week cycle + 2-week cool-down — https://basecamp.com/shapeup/0.3-chapter-01 , https://basecamp.com/shapeup/3.6-chapter-15 — accessed 2026-05-31
+- [3]: Linear, *Initiative and Project updates* (reminder cadence/weekday; lead's local timezone; 1- and 2-day nudges) — https://linear.app/docs/initiative-and-project-updates — accessed 2026-05-31
+- [4]: Linear, *How we built Project Updates* ("we write project updates every week on Friday") — https://linear.app/now/how-we-built-project-updates — accessed 2026-05-31
 
 ## Related
 
