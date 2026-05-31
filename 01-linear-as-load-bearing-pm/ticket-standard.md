@@ -178,6 +178,27 @@ Tickets failing this contract stay in Backlog until completed. Incomplete ticket
 - ❌ No test requirements — agent skips tests, fix breaks silently
 - ❌ No project linked — orphans get lost, no domain filtering, no project progress
 
+## Does anyone else publish an agent-ticket schema? (2026)
+
+Pieces, never the whole. The playbook's "7 sections + execution metadata + stop conditions + token budget" bundle is a *superset* of published standards:
+
+| Source | AC | Verify cmds | Scope / out-of-scope | Stop conditions | Token budget |
+|---|---|---|---|---|---|
+| **This playbook** | ✓ | ✓ | ✓ | ✓ | ✓ |
+| AGENTS.md[¹] | — | ✓ | — | — | — |
+| Anthropic Claude Code best practices[²] | ✓ (as tests) | ✓ | ✓ | ✓ (Stop hooks) | partial |
+| Devin Playbooks[³] | ✓ (postconditions) | — | ✓ (Procedure) | ✓ (Forbidden Actions) | — |
+| Cursor / Cline / Aider rules[⁴] | — | — | — | — | — |
+| Sweep config[⁵] | — | partial (CI logs) | — | rules only | — |
+
+Anthropic's guidance is closest in spirit — it independently says to scope the task, point to files, give "a check it can run," state what's out of scope, and end with verification.[²] But `AGENTS.md` and rules files are *repo-level* context, not per-ticket specs (a different layer), and **no external ticket schema publishes a per-ticket token budget or parallel-safe/worktree/depends-on metadata** — those are this standard's distinct contribution. Preserve the attribution.
+
+## Failure mode: the underspecified ticket
+
+Anthropic names two failure patterns directly: the **trust-then-verify gap** (a "plausible-looking implementation that doesn't handle edge cases" ships because no check existed) and **infinite exploration** (an unscoped "investigate X" makes the agent read hundreds of files and exhaust the context window).[²] Practitioners add **scope creep** ("asked to do X, decided Y and Z would help, did all three") and **hallucinated requirements** filling the gaps a spec left open.[⁶]
+
+> **Worked failure.** Ticket: *"Improve the scoring."* No AC, no verification, no stop condition, no files. The agent: (1) can't distinguish "improved" from "changed," so it re-weights the scorer *and* refactors an adjacent module it decided was "related"; (2) has no command to confirm the pass-rate target, so it exits 0 on a green build that silently regressed the daily scan; (3) burns 240k tokens because nothing told it to stop. Same agent, same model — the *ticket* failed, not the agent. The 7 sections exist to make each of those three impossible.
+
 ## Field-tested gotchas
 
 **Filling the template at 80% feels productive but ships landmines.** The missing 20% is always "verification commands" or "stop conditions" — and those are exactly what stops an agent from going off the rails. Strictly: if a field would be empty, write the explicit rationale ("No tests required — docs only"). Silence is ambiguous.
@@ -215,6 +236,17 @@ When a ticket starts as "investigate X," split into two from the start:
 - **Implementation ticket** — depends-on the spike, AC = "apply the recommendation"
 
 The pairing makes the spike → implementation flow explicit. Without it, spike tickets sprawl ("now I'll also fix it...") and lose the breakpoint where you'd normally pause for a human decision.
+
+## Sources
+
+External claims gathered via web search 2026-05-31 (vendor doc domains block automated fetch). Full notes in [`sources.md`](./sources.md).
+
+- [1]: AGENTS.md — https://agents.md/ — accessed 2026-05-31
+- [2]: Anthropic, *Best practices for Claude Code* — https://code.claude.com/docs/en/best-practices — accessed 2026-05-31
+- [3]: Cognition, *Creating Playbooks (Devin)* — https://docs.devin.ai/product-guides/creating-playbooks — accessed 2026-05-31
+- [4]: Cursor *Rules* https://cursor.com/docs/rules ; Cline *Memory Bank* https://docs.cline.bot/prompting/cline-memory-bank ; Aider *Conventions* https://aider.chat/docs/usage/conventions.html — accessed 2026-05-31
+- [5]: Sweep docs — https://docs.sweep.dev/ — accessed 2026-05-31
+- [6]: Augment Code, *AI Spec Template* — https://www.augmentcode.com/guides/ai-spec-template ; CodeRabbit, *The hidden cost of AI coding agents* — https://www.coderabbit.ai/blog/the-hidden-cost-of-ai-coding-agents-isnt-from-ai-at-all — accessed 2026-05-31
 
 ## Related
 
