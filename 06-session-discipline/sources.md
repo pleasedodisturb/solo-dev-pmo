@@ -1,6 +1,6 @@
 # Sources — Chapter 06: Session discipline
 
-Bibliography rollup for the P06 enrichment. All accessed 2026-05-31 unless noted. Weighting per [SEARCH-PLAYBOOK](../.planning/SEARCH-PLAYBOOK.md) source classes.
+Bibliography rollup for the P06 enrichment. All accessed 2026-05-31 unless noted. Source classes weighted primary docs > vendor blog > academic/book > practitioner > community.
 
 ## Primary — vendor docs (★★★★★)
 
