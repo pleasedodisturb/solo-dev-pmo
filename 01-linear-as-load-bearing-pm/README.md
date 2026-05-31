@@ -12,9 +12,13 @@ This chapter uses [Linear](https://linear.app) as the working example because:
 - Every recommendation here is grounded in primary Linear docs (cited inline).
 - The features Linear ships — exponential estimates, Triage as inbox state, weekly Project Updates with reminders, snooze, auto-roll cycles — map cleanly onto ADHD-aware design constraints.
 
-**The patterns transfer.** If you use [Plane](https://plane.so), [Tracker](https://tracker.org), [Height](https://height.app), [GitHub Projects](https://github.com/features/issues), or build your own: the *patterns* (Triage as inbox, exponential estimates, snooze as hibernation, weekly retros as auto-reminders, agent-autonomous tickets) hold. Implementation maps differ.
+**The patterns transfer.** If you use [Plane](https://plane.so), [Shortcut](https://shortcut.com), [GitHub Projects](https://github.com/features/issues), or build your own: the *patterns* (Triage as inbox, exponential estimates, snooze as hibernation, weekly retros as auto-reminders, agent-autonomous tickets) hold. Implementation maps differ.
 
 If your tool can't do something here — for instance, GitHub Issues has no Triage state — you fake it with a label or a column. The principle, not the feature, is what matters.
+
+### Why Linear specifically? (revisited 2026)
+
+Re-litigated against current docs: **no competing tool matches all the patterns, but [Plane](https://plane.so) (open-source, AGPL, self-hostable) now comes close** — it misses only native snooze. The honest 2026 answer is "Linear *or* Plane," and if snooze-as-hibernation is load-bearing for you, that single feature is the strongest Linear-specific argument. See the full pattern-support matrix and tool-by-tool breakdown in **[`alternatives.md`](./alternatives.md)** (and note: [Height shut down](./alternatives.md) — service ended 2025-09-24; don't pick it).
 
 ## What this chapter covers
 
@@ -28,6 +32,7 @@ If your tool can't do something here — for instance, GitHub Issues has no Tria
 | [Agent-autonomous-ready ticket standard](./ticket-standard.md) | 7 sections + execution metadata + stop conditions. Solves: handing tickets to agents safely. |
 | [I/O rules (CLI > MCP locally)](./io-rules.md) | How Claude reads/writes Linear. CLI for reads + simple updates, GraphQL for what CLI lacks, never the Linear MCP locally. |
 | [Never defer ticket creation](./never-defer.md) | File the ticket NOW in full quality, even if you're not doing the work today. Solves: forgetting forever. |
+| [Alternatives](./alternatives.md) | Pattern-support matrix vs Plane/Shortcut/Jira/Trello/GitHub Projects. Solves: "is this Linear-locked?" |
 
 ## The before/after
 
@@ -66,6 +71,24 @@ The setup above is Linear-side. To make Linear *load-bearing*, you also need:
 
 Once those are wired, Linear stops being "the tool I forget to update" and starts being "the tool that surfaces what I need to do today."
 
+## Version matrix (Linear behavior checked 2026-05-31)
+
+Verified against current Linear docs. Items marked changed are reflected in the sub-topic files; full deltas in [`sources.md`](./sources.md) and the [research log](../.planning/01-linear-as-load-bearing-pm/RESEARCH-LOG.md).
+
+| Pattern / fact | 2026 status |
+|---|---|
+| 1-week cycles, native cooldowns | ✓ supported (cooldown now a per-cycle setting) |
+| Cycle auto-roll | ✓ "any unfinished work rolls over"; may now include Todo `[2026: verify]` |
+| Exponential estimates (1/2/4/8/16) | ✓ "exponential" is a selectable scale |
+| Snooze (`snoozedUntilAt`) | ✓ documented for Triage/Inbox; bulk-Backlog API use `[2026: verify]` |
+| Triage as inbox (manual) | ✓ all plans |
+| Triage Intelligence / Rules / Automations | Business+ only `[new]` |
+| Linear Agent (create/update/summarize) | public beta, all plans (metered) `[new]` |
+| Project Update reminders | ✓ configurable weekday/time, lead's local tz `[changed from workspace tz]` |
+| Inbox notification cap | 2,000 `[changed from 500]` |
+| API | GraphQL only (no REST); scoped + team-limited keys; official MCP server `[new]` |
+| **Free-tier issue cap** | **250 issues — blocks the snooze-backlog pattern; paid plan assumed** |
+
 ## Primary sources (cited throughout)
 
 - [Linear Triage](https://linear.app/docs/triage)
@@ -78,3 +101,6 @@ Once those are wired, Linear stops being "the tool I forget to update" and start
 - [Linear Project Updates](https://linear.app/docs/initiative-and-project-updates)
 - [Linear Method](https://linear.app/method/introduction)
 - [How we built Project Updates — Linear blog](https://linear.app/now/how-we-built-project-updates)
+- [Linear Agent](https://linear.app/docs/linear-agent), [Triage Intelligence](https://linear.app/docs/triage-intelligence), [API & Webhooks](https://linear.app/docs/api-and-webhooks), [MCP server](https://linear.app/docs/mcp), [Billing & plans](https://linear.app/docs/billing-and-plans) — 2026 additions
+
+Full bibliography (incl. external/practitioner/academic sources and a verification caveat) in [`sources.md`](./sources.md).
