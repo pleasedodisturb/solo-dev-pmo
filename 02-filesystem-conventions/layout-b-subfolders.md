@@ -49,13 +49,59 @@ Some directories sit at `~/Projects/` top level, not under a category. These sho
 
 That's usually it. One exception. Be strict — every "top-level exception" you add reduces the cleanliness of the layout.
 
-## Why subfolders, not flat-with-prefixes
+## Layout A (rejected): flat, with prefixes
 
-The considered alternative: keep everything at top level, use prefixes (`case-acme`, `infra-dotfiles`, `app-bar`). Rejected for one reason:
+The alternative we rejected — call it **Layout A** — keeps every repo at the top level and uses name prefixes to fake categories:
 
-**Flat-with-prefixes still leaves 30+ items at top level.** The "I open `~/Projects/` and see a giant zoo" problem isn't solved. Prefixes give you *sorted* clutter, not *de-cluttered* sort.
+```
+~/Projects/
+├── app-bar/
+├── app-baz/
+├── case-acme/
+├── infra-dotfiles/
+├── infra-mac-setup/
+├── tool-repo-sync/
+├── research-learning-rust/
+└── … 25 more …
+```
 
-Subfolders cost you one extra `cd` level. The benefit: `ls ~/Projects/` shows 10 categories, not 30 repos. Switch into the category, find the project, work.
+Rejected for one reason: **flat-with-prefixes still leaves 30+ items at top level.** The "I open `~/Projects/` and see a giant zoo" problem isn't solved. Prefixes give you *sorted* clutter, not *de-cluttered* sort.
+
+Subfolders (Layout B) cost you one extra `cd` level. The benefit: `ls ~/Projects/` shows ~10 categories, not 30 repos. Switch into the category, find the project, work. (And if you're under ~15 repos, Layout A is genuinely fine — see the [chapter README's counter-argument](./README.md#when-flat-is-fine-the-honest-counter-argument).)
+
+## How other heavy users organize (and why ours differs)
+
+Most published "where do my repos live" recipes organize by **provenance** — host / org / repo — not by **purpose**. That's a real and defensible alternative, and worth seeing side by side:
+
+| Scheme | Layout | Axis | Source |
+|---|---|---|---|
+| **This playbook (Layout B)** | `~/Projects/<category>/<repo>` | Purpose (apps/tools/infra/…) | — |
+| dblock | `~/source/<org-or-theme>/<repo>` | Org + theme, owner-named fork dirs | [¹] |
+| "GitHub Tree" (Osame) | `~/Developer/github/<org>/<repo>` | Host → org → repo | [²] |
+| Piet van Zoen | `~/repos/<host>/<user>/<repo>` | Host → user → repo | [³] |
+| `ghq` (tool-enforced) | `~/.ghq/<host>/<user>/<repo>` | Host → user → repo (auto) | [⁴] |
+
+The provenance schemes have one big win: they're **mechanical** — a tool (`ghq get`, a `gclone` function) derives the path from the clone URL, so you never decide where anything goes. The cost is that browsing by *what a thing is for* is impossible; everything from `<org>` is interleaved regardless of whether it's an app, a fork, or a throwaway.
+
+Layout B trades that automation away for intent-legibility: `ls ~/Projects/apps/` is "the things I ship." Pick provenance if you clone a lot of other people's code and rarely browse; pick purpose (Layout B) if your own small repos dominate and you browse by goal. Both beat accretion.
+
+## Monorepos: one leaf, packages namespaced inside
+
+A monorepo is **one disk leaf**, not a category. Its internal "projects" are namespaced *inside* the single repo, never promoted to siblings under `~/Projects/`.
+
+```
+~/Projects/apps/acme-platform/      # ONE repo = one disk leaf = one slug
+├── apps/                           # internal deployables (pnpm/nx convention)
+│   ├── web/
+│   └── api/
+├── packages/                       # internal shared code
+│   └── ui/
+└── pnpm-workspace.yaml
+```
+
+This matches how the workspace tools themselves frame it: pnpm calls a monorepo a workspace that "unite[s] multiple projects inside a single repository," rooted at a `pnpm-workspace.yaml`;[⁵] Nx defines a monorepo as "a single code repository that contains multiple distinct applications," organized into `apps/` and `libs/`.[⁶] The git boundary is the unit of identity, so it's the unit Layout B sorts. Don't fight it by hoisting `web/` and `api/` to `~/Projects/apps/` — they aren't separate repos and have no separate slug or remote.
+
+Nix flakes don't change this either: a `flake.nix` is an in-repo, root-level file,[⁷] so a flake-ified repo is still exactly one disk leaf — now with two extra tracked files.
 
 ## Disk path vs GitHub repo name
 
@@ -146,6 +192,16 @@ A small daily `launchd` job runs `repo-sync-tool` (or your own equivalent) that:
 - Reports drift to `ntfy`
 
 Convention enforcement at the filesystem level. Drift gets visible the day after.
+
+## Sources
+
+- [¹] https://code.dblock.org/2016/03/25/a-directory-structure-for-oss-and-work-github-clones.html — accessed 2026-05-31
+- [²] https://hirok.io/posts/github-tree-structure — accessed 2026-05-31
+- [³] https://piet.me/blog/organizing-git-projects/ — accessed 2026-05-31
+- [⁴] https://github.com/x-motemen/ghq — accessed 2026-05-31
+- [⁵] https://pnpm.io/workspaces — accessed 2026-05-31
+- [⁶] https://nx.dev/docs/concepts/decisions/why-monorepos — accessed 2026-05-31
+- [⁷] https://nix.dev/concepts/flakes.html — accessed 2026-05-31
 
 ## Related
 
