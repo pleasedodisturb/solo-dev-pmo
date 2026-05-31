@@ -35,17 +35,28 @@ The `repo: <slug>` tag in the description bridges them. Linear display stays pre
 
 ## How sync tooling consumes this
 
-Your `repo-sync-tool` (or equivalent) reads Linear projects' descriptions, parses the first line, and:
+Your `repo-sync-tool` (or equivalent) reads Linear projects' descriptions, parses the first line, and derives the GitHub repo. Here's a concrete, runnable shell function that reads the tag and `cd`s you straight to the repo on disk — the everyday payoff of the binding:
 
-```python
-# Pseudocode
-for project in linear.projects.list():
-    first_line = project.description.split("\n")[0]
-    if first_line.startswith("repo: "):
-        slug = first_line[6:].strip()
-        github_repo = f"github.com/{user}/{slug}"
-        # Now we have the binding
+```bash
+# proj-cd <project-name-substring> — jump to a Linear project's repo on disk.
+# Reads the `repo:` tag from the project's summary/description first line.
+proj-cd() {
+  local slug
+  slug=$(linearis project list --json \
+    | jq -r --arg q "${1:l}" '
+        .[] | select((.name|ascii_downcase) | contains($q))
+        | (.summary // .description) | split("\n")[]
+        | select(startswith("repo: ")) | ltrimstr("repo: ") | gsub("\\s+$";"")' \
+    | head -1)
+  [ -z "$slug" ] && { echo "no repo: tag for '$1'"; return 1; }
+  local dir
+  dir=$(find ~/Projects -mindepth 2 -maxdepth 2 -type d -name "$slug" | head -1)
+  [ -z "$dir" ] && { echo "repo '$slug' tagged but not on disk"; return 1; }
+  cd "$dir"
+}
 ```
+
+`proj-cd "money"` → reads `repo: money` off the project → `cd ~/Projects/money/money`. Note it reads `.summary // .description`: in the live Linear data model the first free-text field is the project *summary*, which is where the tag actually lands (verified first-hand in this repo's own workspace). Swap `linearis` for `curl` against the Linear GraphQL API if you don't use the CLI.
 
 This bridge enables:
 - **Auto-link GitHub issues into Linear projects.** A webhook on issue-created posts to the matching project.
@@ -123,6 +134,31 @@ After this binding:
 - Agents and humans both reach the right repo by reading the tag.
 - Rename `infra-cleanup` → `infra-cleanup-v2`? Update the tag in one place; sync tooling re-validates.
 
+## Prior art: we looked, and there isn't any
+
+We could not find a published convention for "a machine-readable `key: value` tag as the first line of a PM tool's project description." People *do* stuff ad-hoc metadata into description fields — an MCP spec issue notes such metadata "is not machine-readable and cannot be reliably parsed"[¹] — but nobody standardizes it. Treat `repo: <slug>` as this playbook's own convention. It borrows from three honest ancestors:
+
+- **Git trailers** (`Co-authored-by:`, `Signed-off-by:`) — RFC-822-style `key: value` lines on an otherwise free-form commit message.[²] Same colon-separated key:value-in-prose idea; ours sits at the *top* of a different field.
+- **YAML front-matter** — a metadata block at the top of a Markdown file, parsed by static-site generators and GitHub Docs itself.[³] Same "metadata at the top," but a delimited block, not one line.
+- **Conventional Commits** — `type(scope): description` as a structured first commit line.[⁴] Same "structured first line" shape.
+
+## Alternatives for non-Linear users
+
+No mainstream PM tool ships a first-class "this project tracks this repo" field — native links are all issue/PR-level (Linear branch-names + magic words, Jira Smart Commits, Trello card attachments).[⁵] If you're not on Linear, reproduce the binding:
+
+| Tool | Mechanism | Note |
+|---|---|---|
+| GitHub Projects v2 | Custom **Text** or **Single-select** field named `Repo`[⁶] | Projects v2 is deliberately repo-agnostic (org/user-level)[⁷], so there's nothing native to repurpose — you add the field |
+| Notion | A **URL** property, or a **relation** to a synced GitHub database[⁸] | Relation gives live issue/PR rollups |
+| Trello | A **Custom Fields** text field or board **label**; or the GitHub Power-Up[⁹] | Label is the zero-setup version |
+
+Trade-off: a structured field is validated and filterable in-UI but tool-locked and needs setup. The `repo:` tag is plain text — it survives export, works identically across tools, and a one-line regex parses it — at the cost of being a convention the tool won't enforce.
+
+## Field tests beyond the author
+
+- **Dogfooded here.** This playbook's own Linear project ("solo-dev-pmo Playbook") carries `repo: solo-dev-pmo` as the first line of its summary — a live instance, verified 2026-05-31, not an aspirational example.
+- **It fills a confirmed gap.** Across Linear, Jira, GitHub Projects, Asana, Notion, and Trello, *none* offers a native project→repo field;[⁵] the closest, Linear's GitHub Issues Sync, binds a *team* to repos, not a project.[¹⁰] The tag isn't reinventing a wheel — there is no wheel.
+
 ## Field-tested gotchas
 
 **Description line ordering matters.** The tag MUST be the FIRST line. If you put it second or third, parsers may miss it (some parsers look at line 0 only).
@@ -172,6 +208,19 @@ done
 ```
 
 Run weekly; act on the report.
+
+## Sources
+
+- [¹] https://github.com/modelcontextprotocol/modelcontextprotocol/issues/1483 — accessed 2026-05-31
+- [²] https://git-scm.com/docs/git-interpret-trailers — accessed 2026-05-31
+- [³] https://docs.github.com/en/contributing/writing-for-github-docs/using-yaml-frontmatter — accessed 2026-05-31
+- [⁴] https://www.conventionalcommits.org/en/v1.0.0/ — accessed 2026-05-31
+- [⁵] https://linear.app/docs/github-integration — accessed 2026-05-31
+- [⁶] https://docs.github.com/en/issues/planning-and-tracking-with-projects/understanding-fields/about-single-select-fields — accessed 2026-05-31
+- [⁷] https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects — accessed 2026-05-31
+- [⁸] https://www.notion.com/help/github — accessed 2026-05-31
+- [⁹] https://support.atlassian.com/trello/docs/using-the-github-power-up/ — accessed 2026-05-31
+- [¹⁰] https://linear.app/changelog/2023-12-14-github-issues-sync — accessed 2026-05-31
 
 ## Related
 
