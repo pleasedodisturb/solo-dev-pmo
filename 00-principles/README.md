@@ -12,3 +12,5 @@ Four design axes that shape every chapter. Read these first.
 If you only read one, read [ADHD-aware design](./adhd-aware-design.md) — it's the axis that distinguishes this playbook from every adjacent one.
 
 **Where the ADHD claims come from:** the empirical claims in this chapter are graded against the peer-reviewed literature in [evidence-and-citations.md](./evidence-and-citations.md) — well-supported claims stated plainly, indirect inferences flagged, and practitioner lore (e.g. the anti-streak rationale) marked as unproven rather than dressed up as a study. This chapter is field-tested practice, not clinical guidance.
+
+Each sub-topic also carries its own `## Alternatives` and `## Sources`. The chapter-wide bibliography is rolled up in [sources.md](./sources.md).
