@@ -4,6 +4,8 @@
 
 This chapter is about the integration layer. How memory works. What goes in CLAUDE.md vs. auto-memory. Which MCP for which task. When to spawn an agent vs. inline. Browser tool routing. The patterns hold for any agentic coding tool, but examples use Claude Code because that's where the author runs production.
 
+> **Checked against Claude Code v2.1.158, 2026-05-31.** Docs now live at **code.claude.com/docs** (moved from `docs.claude.com/en/docs/claude-code`). Fast-moving deltas since first draft: the `Task` tool is now `Agent`; **plugins** bundle skills/hooks/MCP behind marketplaces; custom commands merged into **skills**; hook events grew from ~5 to ~30; **MCP Tool Search** defers tool definitions. Each is covered in the relevant sub-topic, not silently rewritten.
+
 ## What this chapter covers
 
 | Section | What it solves |
@@ -14,6 +16,7 @@ This chapter is about the integration layer. How memory works. What goes in CLAU
 | [MCP routing](./mcp-routing.md) | Which MCP for which task. CLI > MCP for Linear locally; WebFetch > Playwright for read-only. |
 | [Browser tools](./browser-tools.md) | Ranked browser-tooling decisions. WebFetch first, then specialized. |
 | [Agent rules](./agent-rules.md) | When to spawn a subagent vs. inline. Token budgets. Stop conditions. |
+| [Agent-platform portability](./agent-platform-portability.md) | The same patterns in Cursor, Codex, Aider, Cline, Continue. |
 
 ## The framing
 
@@ -23,6 +26,10 @@ There are two failure modes when integrating an agent into your stack:
 2. **Over-integration:** the agent's rules file is 2000 lines, every session starts slowly, costs add up, and the agent gets confused by conflicting guidance.
 
 The cure: layered rules at the right granularity, with the right routing per task. The rest of this chapter is mechanics.
+
+## Not just Claude Code
+
+The vocabulary here is Claude Code's, but the system isn't. Every other operator agent has the same parts under different names: a project-rules file (`CLAUDE.md` → Cursor `.cursor/rules`, Aider `CONVENTIONS.md`, Cline `.clinerules`, Continue `.continue/rules`, Codex/Copilot `AGENTS.md` — now a Linux-Foundation-stewarded standard), commands/skills, and increasingly MCP and hooks. The honest gaps: only **Cursor** also has real event hooks, and only **Codex/Cursor** also have subagents; **Aider** has neither. Read the chapter in Claude Code's terms, then [translate](./agent-platform-portability.md). The patterns are the asset; the product is swappable.
 
 ## The four memory layers (recap)
 
