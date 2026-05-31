@@ -4,6 +4,12 @@
 
 The mental shift: most solo devs see snooze as a soft reminder. In this playbook, snooze is the hibernation gate that turns a Backlog of 270 items into a Backlog of 70 visible + 200 deliberately asleep.
 
+This is GTD's *tickler file* by another name. David Allen's system parks date-deferred items to "send yourself reminders in the future," and holds non-committed items on a **Someday/Maybe** list you "check every so often."[¹] Snooze = tickler (date-defer); the snoozed Backlog = Someday/Maybe. The point is identical: get it out of your head and your active view without deleting it.
+
+### Free-tier prerequisite
+
+**This pattern presumes a paid Linear plan.** The Free tier caps issue *creation* at 250 ("If you have over 250 issues, you will no longer be able to create new issues").[²] The whole premise here — a 270–336-issue backlog you bulk-snooze down to ~70 visible — can't exist under that cap. On Free you'd hit the wall long before hibernation matters. If you're running this at the scale the chapter describes, you're on Basic or above. (Students get a year free; the Startups program gives up to 6 months of Basic/Business.[²]) Stated plainly so no one adopts a pattern their plan blocks.
+
 ## What `snoozedUntilAt` actually does
 
 From [Linear Triage docs](https://linear.app/docs/triage):
@@ -16,6 +22,8 @@ Mechanically:
 - The wake date is fixed at set-time. There's no recurring snooze.
 
 This is exactly the right semantics. Snooze = "I trust the system to wake me when needed, otherwise leave me alone until <date>."
+
+**[2026: verify against the current GraphQL schema.]** Linear's docs now describe snooze most prominently as a **Triage** action (the `H` key in the triage queue) and a separate **Inbox notification** snooze, and document a parallel **Issue Reminders** feature (remind-me on an issue/doc/project).[³] The bulk-*Backlog*-snooze recipe below relies on `issueUpdate(snoozedUntilAt:)` applying to any issue, not only Triage items — this has held historically, but confirm it against your workspace's current schema before scripting a 200-issue pass. If the field is ever restricted to Triage, the fallback is Issue Reminders or a `snoozed`-equivalent label + a scheduled "wake" query.
 
 ## The use case it solves: dread-driven Backlog avoidance
 
@@ -137,6 +145,26 @@ Combined with the [Friday retro](./cycles-and-rituals.md) — every Friday, run 
 - Cancel
 
 Run on cooldown weeks; skip on push weeks. After 6-8 weeks, the visible Backlog stabilizes at "what's actually realistic for the next 90 days." Beyond that horizon, everything is either snoozed or canceled.
+
+## What this rules out
+
+- **No "snooze = priority queue."** A snoozed item carries no intent to do it. If you snooze things you actually plan to do, the visible Backlog stops being trustworthy and you're back to dread.
+- **No bulk un-snooze.** Un-snoozing in bulk re-creates the original 270-item Backlog. Wake dates are respected; individual un-snooze only, with a reason.
+- **No snooze as a blocking-tracker.** Blocked work is `Blocked`-related, not snoozed — you need it visible so you unblock it.
+- **No Free-tier adoption at scale.** The 250-issue cap forecloses the hibernating-backlog premise.[²]
+
+## Field tests beyond the author
+
+Honest status: **we found no external practitioner publishing this exact bulk-snooze-as-hibernation pattern.** Snooze appears in solo workflows as a *defer* instinct — one solo-dev writer frames the antidote to getting stuck as "decide to decide later… the time to decide is not right now,"[⁴] which is the same move at a smaller grain. The strongest external grounding is conceptual, not a case study: GTD's tickler file and Someday/Maybe list are the documented antecedents.[¹] So treat the *specific* 90-day-bulk-snooze numbers as author-calibrated and field-tested at one engineer's scale, not as an externally validated benchmark. If you adopt it, log your own wake-date hit-rate and adjust.
+
+## Sources
+
+Linear claims verified via Linear's documentation-search MCP on 2026-05-31. Full notes + verification caveat in [`sources.md`](./sources.md).
+
+- [1]: David Allen, *Getting Things Done* (tickler file / Someday-Maybe) — https://gettingthingsdone.com/what-is-gtd/ ; tickler concept https://hamberg.no/gtd ; Someday/Maybe https://facilethings.com/blog/en/someday-maybes — accessed 2026-05-31
+- [2]: Linear, *Billing and plans* (Free 250-issue cap) / *Startups* — https://linear.app/docs/billing-and-plans , https://linear.app/startups — accessed 2026-05-31
+- [3]: Linear, *Triage* / *Inbox* (snooze + Issue Reminders) — https://linear.app/docs/triage , https://linear.app/docs/inbox — accessed 2026-05-31
+- [4]: Melatonin, *Dev Therapy, part 1: How to not get stuck (as a solo dev)* — https://melatonin.dev/blog/dev-therapy-part-i-how-to-not-get-stuck-as-a-solo-dev/ — accessed 2026-05-31
 
 ## Related
 
