@@ -140,4 +140,46 @@ doc-search MCP is the primary-doc channel for this phase).
   change needed beyond a "checked 2026-05-31" stamp.
 - **Counter-evidence:** none — chapter is accurate here.
 
-<!-- Web-research streams (Q01.6–Q01.20) appended below as subagent findings land. -->
+## 2026-05-31 — Estimation literature (Q01.6–9)
+
+- **Sources:** McConnell *Software Estimation* (2006); Cohn (Mountain Goat: Fibonacci/SPIDR); Jeffries *Story Points Revisited*; Holub *#NoEstimates*; Fowler bliki; ZenHub; Atlassian; SAFe; SPACE (ACM Queue 2021); DORA. URLs in `sources.md`.
+- **Class:** primary/book + practitioner + academic
+- **Surfaced facts:** No author owns "1/2/4/8/16" — it's a selectable tooling option (Linear "exponential"; ZenHub doubling). Cohn's perceptibility/false-precision + McConnell's diseconomies-of-scale justify any non-linear scale. Counter-pole: Jeffries regrets story points; Holub calls estimates waste; Fowler's purpose-test is the pragmatic middle. **"16 = hard stop" is author-original in its specific number** (nearest published: Atlassian "20+ = red flag", Cohn "top of scale = split", SAFe right-sizing, SPIDR).
+- **Used in:** `estimates-exponential.md`
+- **Counter-evidence / honest gap:** NO empirical study of accuracy by scale type; NO controlled #NoEstimates outcome study (2018+). Stated in-file.
+
+## 2026-05-31 — Alternatives matrix (Q01.10–12)
+
+- **Sources:** Plane, Shortcut, Jira, Trello, GitHub Projects primary docs; Height shutdown coverage. URLs in `sources.md` + `alternatives.md`.
+- **Class:** primary vendor docs + secondary (Height status)
+- **Surfaced facts:** No tool matches Linear's full six-pattern set. **Plane is closest** (AGPL, self-hostable; native cycles+auto-roll, Intake/Triage, richest estimates, project updates+reminders, official MCP) — **misses only snooze.** **Height SHUT DOWN, service ended 2025-09-24** (was a transfer target in the chapter). Shortcut/GitHub ~4/6; Jira/Trello trail. GitHub Issue fields entered preview 2026-05-21.
+- **Used in:** new `alternatives.md`; README "Why Linear revisited"; `io-rules.md` mapping table.
+- **Counter-evidence / DELTA:** the chapter's "Height" references are now dead; reframed "Why Linear?" to "Linear or Plane."
+
+## 2026-05-31 — Agent-ticket schemas + failure modes (Q01.16–17)
+
+- **Sources:** AGENTS.md; Anthropic Claude Code best practices; Devin Playbooks; Cursor/Cline/Aider rules; Sweep; Augment Code; CodeRabbit. URLs in `sources.md`.
+- **Class:** primary vendor docs + practitioner
+- **Surfaced facts:** The 7-section+metadata+stop-conditions+token-budget bundle is a **superset**; Anthropic's guidance is closest in spirit (scope/files/verification/out-of-scope/Stop hooks). **No external ticket schema publishes a per-ticket token budget or parallel-safe/worktree/depends-on metadata** — playbook-original. Failure modes (Anthropic): trust-then-verify gap, infinite exploration; (practitioner): scope creep, hallucinated requirements.
+- **Used in:** `ticket-standard.md`
+- **Counter-evidence:** none; corroborates the standard's value.
+
+## 2026-05-31 — Ritual provenance + WIP math (Q01.18–20)
+
+- **Sources:** Shape Up (Basecamp); Anderson *Kanban* (2010); Little's Law; Kniberg & Skarin; Atlassian WIP. URLs in `sources.md`.
+- **Class:** primary/book + practitioner
+- **Surfaced facts:** Shape Up = 6 build + 2 cool-down (25%); playbook keeps the 25% ratio, compresses to 3+1. WIP math = Little's Law (cycle time = WIP/throughput) + Anderson's "~2 items per knowledge worker." Friday update = Linear's *internal* habit, not a product rule; weekly cadence IS Linear's recommendation; 16:00 is author's choice (Q01.18).
+- **Used in:** `cycles-and-rituals.md`, `wip-cap-with-continuous-areas.md`
+- **Counter-evidence:** none.
+
+## 2026-05-31 — Practitioner field tests, counter-evidence, GTD (Q01.13–15)
+
+- **Sources:** Lunch Pail Labs, Plum, Indie Hackers (positive); Pipada, HN sprint threads, levelsio, Melatonin (counter); David Allen GTD (official). URLs in `sources.md`.
+- **Class:** practitioner + community + primary/book
+- **Surfaced facts:** Positive load-bearing-PM accounts exist (strongest true-solo = Lunch Pail Labs; others are small teams). GTD is the clean lineage: "mind for ideas not holding them" (capture), tickler file (snooze), Someday/Maybe (hibernating backlog).
+- **Used in:** `triage-as-inbox.md`, `snooze-as-hibernation.md`, `never-defer.md`
+- **Counter-evidence:** real but structural — NO clean "adopted-then-abandoned-Linear-as-solo" case; the honest counter is "many solo devs reject heavy PM tooling (markdown/git, Post-its); sprints are a delivery-predictability tool with little value when no one needs the predictability." Stated in-file.
+
+## 2026-05-31 — Cross-cutting verification caveat
+
+- **All non-Linear domains returned HTTP 403 to automated full-page fetch.** External quotes are web-search extractions; widely-attested lines are cross-confirmed, others are presented as position-attributions. Recorded prominently in `sources.md`; `[2026: verify]` markers left in-text for behaviors needing live-workspace confirmation.

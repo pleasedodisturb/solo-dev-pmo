@@ -99,6 +99,31 @@ These cover adjacent territory. We link to them rather than duplicating.
 - [The One-Person Unicorn — NxCode](https://www.nxcode.io/resources/news/one-person-unicorn-context-engineering-solo-founder-guide-2026)
 - [Managing Projects with ADHD — Leantime](https://leantime.io/managing-projects-with-adhd-skip-personal-project-planners/)
 
+## Chapter 01 research sources (added in M1 P01 grounded-research pass)
+
+Added 2026-05-31. Full bibliography + verification caveat: [`01-linear-as-load-bearing-pm/sources.md`](./01-linear-as-load-bearing-pm/sources.md).
+
+### PM-tool alternatives (chapter 01)
+
+- [Plane](https://github.com/makeplane/plane) — open-source (AGPL-3.0) Linear-alike; the closest substitute (self-hostable; misses native snooze)
+- [Shortcut](https://shortcut.com) — iterations + auto-move automation; official MCP
+- [GitHub Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects) — iteration field, status updates, `gh project`, official MCP
+- [Jira](https://www.atlassian.com/software/jira) / [Trello](https://trello.com) — Atlassian; Rovo MCP (Trello out of scope)
+- Height — **shut down 2025-09-24** ([coverage](https://alternativeto.net/news/2025/3/height-project-management-tool-to-shut-down-by-september-2025/)); no longer a viable target
+
+### Estimation, agile-method & PKM references (chapter 01)
+
+- Steve McConnell, *Software Estimation: Demystifying the Black Art* (2006)
+- Mike Cohn — [Mountain Goat Software](https://www.mountaingoatsoftware.com) (Fibonacci rationale, SPIDR splitting)
+- Ron Jeffries, [*Story Points Revisited*](https://ronjeffries.com/articles/019-01ff/story-points/Index.html)
+- Allen Holub, [*#NoEstimates*](https://holub.com/noestimates-an-introduction/)
+- Martin Fowler, [bliki: estimation/velocity](https://martinfowler.com/bliki/PurposeOfEstimation.html)
+- Forsgren et al., [*The SPACE of Developer Productivity*](https://queue.acm.org/detail.cfm?id=3454124) (ACM Queue, 2021); [DORA](https://dora.dev)
+- David J. Anderson, *Kanban* (2010); Kniberg & Skarin, [*Kanban and Scrum*](https://www.infoq.com/minibooks/kanban-scrum-minibook/)
+- Basecamp, [*Shape Up*](https://basecamp.com/shapeup) (Ryan Singer) — cycles + cool-down
+- David Allen, [*Getting Things Done*](https://gettingthingsdone.com) — capture / trusted system / tickler file
+- [AGENTS.md](https://agents.md/), [Anthropic Claude Code best practices](https://code.claude.com/docs/en/best-practices) — agent-task structuring
+
 ## Tools mentioned in passing
 
 These show up in chapters but aren't load-bearing:
