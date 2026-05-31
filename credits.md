@@ -84,6 +84,14 @@ These cover adjacent territory. We link to them rather than duplicating.
 - [`danielrosehill/Claude-Code-Projects-Index`](https://github.com/danielrosehill/Claude-Code-Projects-Index) — Index of Claude Code starter templates.
 - [`quemsah/awesome-claude-plugins`](https://github.com/quemsah/awesome-claude-plugins) — Plugin metrics.
 
+### Agent safety + hardening + token economy
+
+Same-tier prior art for chapters 08 (Agent safety) and 09 (Token economy). Listed alongside external alternatives, not above them.
+
+- [`pleasedodisturb/llm-safe-haven`](https://github.com/pleasedodisturb/llm-safe-haven) — Published npm tool that hardens AI coding agents in 60 seconds. 4-tier security scorecard; ships `audit-logger.js` / `bash-firewall.js` / `secret-guard.js` hooks; supports Claude Code / Cursor / Windsurf / Cline / Continue / Aider / Codex CLI. Cited in [chapter 08 — agent-hardening](./08-agent-safety/agent-hardening.md).
+- [`pleasedodisturb/terminal-craft`](https://github.com/pleasedodisturb/terminal-craft) — Ghostty + tmux + Claude Code workspace patterns. Session persistence + visual alerts + hook routing. Cited in [chapter 08 — session-isolation](./08-agent-safety/session-isolation.md). Note: tmux is session-shaped, not security-shaped — the chapter is explicit about that.
+- [`pleasedodisturb/awesome-llm-token-optimization`](https://github.com/pleasedodisturb/awesome-llm-token-optimization) — 14-section curated catalog of cost-reduction strategies (caching, batch, routing, compression, KV cache, observability). Used as a starting map for [chapter 09 — token economy](./09-token-economy/); the chapter reaches to vendor primary docs directly for substance.
+
 ### General topics
 
 - [`degoogle` topic on GitHub](https://github.com/topics/degoogle) — adjacent reading for [calendar neutrality](./00-principles/calendar-neutrality.md)
