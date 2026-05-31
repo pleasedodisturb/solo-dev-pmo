@@ -12,6 +12,8 @@ Already introduced in [00 — four-layer memory](../00-principles/four-layer-mem
 
 **Cap:** ~200 lines. Cap is non-negotiable; exceed it and load time / token cost compound.
 
+> **This cap is now vendor-confirmed (Q03.11, Q03.8).** Anthropic's own docs say: "target under 200 lines per CLAUDE.md file. Longer files consume more context and **reduce adherence**."[¹] The deeper reason is *context rot*: Anthropic's context-engineering guidance describes a finite "attention budget" with diminishing returns,[²] and independent benchmarks converge on degradation well before the window fills — RULER's "effective context length" is far below the advertised max,[³] NoLiMa found 11 of 12 models drop below 50% of short-context performance by 32K tokens,[⁴] and Chroma's *Context Rot* study saw all 18 tested frontier models degrade as input grows.[⁵] Always-loaded rules compete for that budget on *every* turn — so Layer 1 stays small not for load time alone, but because a bloated always-on context measurably lowers how well the agent follows any single rule in it.
+
 ### What goes here
 
 - Git workflow rules (branch naming, commit message format, push rules)
@@ -46,68 +48,7 @@ This works because the agent reads `~/.claude/CLAUDE.md` every session but only 
 
 ### Example structure
 
-```markdown
-# Global Claude Code Instructions
-
-## Memory Architecture (4 Layers)
-[short table + 4 paragraphs]
-
-## Secrets
-[1 paragraph + pointer to ~/.claude/docs/secrets-policy.md]
-
-## Testing
-[the 5 hard rules]
-
-## PM Tool (Linear)
-[1 paragraph + pointer to ~/.claude/docs/linear-io-rules.md]
-
-## Tools
-[1 paragraph]
-
-## MCP Servers
-[1 paragraph + pointer to ~/.claude/MCP_REGISTRY.md]
-
-## Browser Tools
-[1 paragraph + pointer to ~/.claude/docs/browser-tools.md]
-
-## Output
-[paste-friendly commands, absolute paths]
-
-## File Organization
-[never put scripts in ~/]
-
-## Safety
-[ask before destructive, never commit secrets]
-
-## Who I Am
-[1 paragraph]
-
-## Context Preservation
-[narratives ARE state]
-
-## Quick Commands
-["push" = full sequence]
-
-## Git Workflow
-[branch rules, never main, etc.]
-
-## CLAUDE.md Discipline
-[keep this file under 200 lines!]
-
-## Session Discipline
-[commit cadence]
-
-## Research Discipline
-[audit before implement]
-
-## Lessons Learned Discipline
-[mistakes get feedback memories]
-
-## Gotchas
-[the specific landmines]
-```
-
-The file reads top-to-bottom in <2 minutes. Each section is short and points elsewhere for detail.
+A full, copy-pasteable Layer-1 outline lives in [`examples/global-CLAUDE.md.template`](../examples/global-CLAUDE.md.template) — short sections (Memory, Secrets, Testing, PM tool, Tools, MCP, Browser, Git, Session/Research/Lessons discipline, Gotchas, Who-I-Am), each a few lines that point elsewhere for detail. The file should read top-to-bottom in under two minutes.
 
 ## Layer 2 — Project rules
 
@@ -282,6 +223,21 @@ Skip Layer 4 for:
 - Things already in Layer 1/2/3 (don't duplicate)
 - One-conversation context (ephemeral)
 
+## Prompt caching and the layers (Q03.9)
+
+The 4-layer model and prompt caching reinforce each other. Claude Code caches automatically with a **stable-prefix order: system prompt → project context (CLAUDE.md + auto-memory + unscoped rules) → conversation.**[⁶] So **Layers 1 and 2 cache automatically** as part of that prefix and cache-*hit* on every turn — as long as the prefix doesn't change. On a Claude subscription, Claude Code requests the **1-hour cache TTL** for free; cache reads bill at ~0.1× input rate.[⁶]
+
+Two consequences for how you treat memory:
+
+- **Editing CLAUDE.md mid-session is cache-safe but doesn't take effect until restart/`/compact`** — the running session keeps the cached prefix.[⁶] Don't expect a live edit to change behavior immediately.
+- **Layer 4 (on-demand MCP recall) deliberately sits *after* the cached prefix** — it's a tool call, not always-on context, so querying it doesn't invalidate the Layer 1/2 cache. This is another reason cross-project memory belongs in Layer 4, not stuffed into Layer 1.
+
+Keeping Layers 1–2 small and stable is therefore doubly paid back: less attention budget spent (above) **and** a higher cache-hit rate. See [agent-rules — cost and cache accounting](./agent-rules.md#cost-and-cache-hit-accounting-q0326q0327).
+
+## How this compares to other agent-memory systems
+
+The 4-layer model is one design among many (mem0, Letta, LangGraph, Cursor/Aider/Cline memory). The full structured comparison — and when to reach for a vector store instead of a flat file — is in [memory-comparison](./memory-comparison.md).
+
 ## Boundary rules
 
 | Situation | Layer |
@@ -334,4 +290,15 @@ Layer 3 memories often reference Layer 1 rules: `Per [global rule on testing](~/
 
 - [00 — four-layer memory](../00-principles/four-layer-memory.md) — the principles version
 - [CLAUDE.md template](./claude-md-template.md) — what Layer 2 looks like
+- [Memory comparison](./memory-comparison.md) — vs mem0, Letta, LangGraph, Cursor/Aider/Cline
 - [Chapter 06 — Session discipline](../06-session-discipline/) — when to write memory vs. when not
+- [sources.md](./sources.md) — full bibliography
+
+---
+
+[¹]: https://code.claude.com/docs/en/memory — accessed 2026-05-31
+[²]: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents — accessed 2026-05-31
+[³]: RULER, arXiv:2404.06654 — accessed 2026-05-31
+[⁴]: NoLiMa, arXiv:2502.05167 — accessed 2026-05-31
+[⁵]: https://www.trychroma.com/research/context-rot — accessed 2026-05-31
+[⁶]: https://code.claude.com/docs/en/prompt-caching — accessed 2026-05-31
