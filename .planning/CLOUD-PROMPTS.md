@@ -265,6 +265,45 @@ When done: mark the PR ready for review. In the PR body, confirm the cheats-star
 
 ---
 
+## P00b — Principles (follow-up: breadth pass)
+
+The first P00 session (PR #3) closed the ADHD-evidence risk but only touched `adhd-aware-design.md`. This follow-up closes the breadth gap on the other 3 axes + adds Alternatives / "What this rules out" subsections.
+
+```
+You are picking up the P00 follow-up phase of the solo-dev-pmo playbook research milestone.
+
+Read in this order:
+  1. .planning/HANDOFF.md                              ← startup contract (READ FIRST)
+  2. .planning/PROJECT.md                              ← project + milestone context
+  3. .planning/ROADMAP.md                              ← where P00 fits
+  4. .planning/SEARCH-PLAYBOOK.md                      ← shared search recipes
+  5. .planning/00-principles/RESEARCH-followup.md      ← YOUR ASSIGNMENT (delta brief)
+  6. .planning/00-principles/RESEARCH.md               ← original brief; the followup is a DELTA — read for source plan + voice
+  7. 00-principles/README.md + all sub-topic files     ← what you're enriching
+  8. 00-principles/evidence-and-citations.md           ← LOCKED — do not modify
+
+Then execute the followup brief end-to-end per its §5 "Output requirements" and §7 "Stop conditions".
+
+Cloud-specific notes:
+- Linear: use mcp__plugin_linear_linear__* MCP if needed (probably not for this phase).
+- Secrets: don't try rbw — none needed.
+- Branch: P00b/<short-description>. Open a draft PR on first meaningful commit.
+- Every commit must end with the Co-Authored-By trailer per .planning/HANDOFF.md.
+- NEVER commit to main directly. NEVER force-push.
+- DO NOT touch evidence-and-citations.md (LOCKED from prior pass).
+- DO NOT touch adhd-aware-design.md's existing content — only ADD the Alternatives + What-this-rules-out subsections at the bottom.
+
+Effort estimate: S (2–4 hrs research + 2–3 hrs writing). Single agent fine.
+
+Biggest risks per the followup brief's §7:
+1. Claude's first-party auto-memory (now shipped per chapter 03's enrichment) might affect the 4-layer model's recommendation. Surface honestly, don't silently rewrite — the chapter takes a position.
+2. If a memory-architecture competitor (mem0/Letta/LangGraph) structurally beats the 4-layer model for solo-dev use, surface for human decision.
+
+When done: mark the PR ready for review and summarize in the PR body what shipped vs what was hedged.
+```
+
+---
+
 ## After all phases ship
 
 Run locally:
