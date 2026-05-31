@@ -1,12 +1,18 @@
 # launchd over cron
 
-> On macOS: launchd handles missed runs when the machine is asleep. cron silently drops them. Use launchd.
+> On macOS, launchd coalesces missed runs when the machine was asleep; cron
+> silently drops them. Use launchd. On Linux, use systemd timers —
+> [linux-systemd-variant](./linux-systemd-variant.md).
+
+> **Untested-in-this-pass caveat.** The plists below were written and validated
+> for XML well-formedness but **not run against a live launchd** during this
+> research pass (no macOS available). Verify locally with `plutil` + a manual
+> `launchctl kickstart` before trusting them. See the chapter README.
 
 ## The recipe
 
-Time-based triggers on macOS go in `~/Library/LaunchAgents/` as `.plist` files.
-
-Minimal plist for "fire at 09:00 every Monday":
+Per-user time triggers live in `~/Library/LaunchAgents/` as `.plist` files. One
+agent = one plist. The canonical full plist (Morning Triage, daily 09:00):
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -14,84 +20,46 @@ Minimal plist for "fire at 09:00 every Monday":
     "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key>
-  <string>com.<your>.monday-plan</string>
-
+  <key>Label</key><string>com.<USER>.daily-triage</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/Users/<u>/.local/bin/monday-plan</string>
+    <string>/Users/<USER>/.local/bin/daily-triage</string>
   </array>
-
   <key>StartCalendarInterval</key>
   <dict>
-    <key>Weekday</key><integer>1</integer>
     <key>Hour</key><integer>9</integer>
     <key>Minute</key><integer>0</integer>
   </dict>
-
-  <key>StandardOutPath</key>
-  <string>/tmp/monday-plan.out</string>
-  <key>StandardErrorPath</key>
-  <string>/tmp/monday-plan.err</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+  <key>StandardOutPath</key><string>/tmp/daily-triage.out</string>
+  <key>StandardErrorPath</key><string>/tmp/daily-triage.err</string>
 </dict>
 </plist>
 ```
 
-Load it:
-```bash
-launchctl load ~/Library/LaunchAgents/com.<your>.monday-plan.plist
-launchctl list | grep monday-plan
-```
+`PATH` is set explicitly because launchd does **not** source your shell profile;
+agents get a bare `/usr/bin:/bin:/usr/sbin:/sbin` with **no** `/opt/homebrew/bin`
+or `/usr/local/bin`.[¹] Use `<USER>` placeholders — never ship a hardcoded
+username.
 
-To test immediately:
-```bash
-launchctl start com.<your>.monday-plan
-```
+## The four rituals: copy-paste plists
 
-To unload (e.g., when editing):
-```bash
-launchctl unload ~/Library/LaunchAgents/com.<your>.monday-plan.plist
-```
+All four share the structure above. Only `Label`, the script path, and
+`StartCalendarInterval` change. `Weekday`: `0`/`7` = Sunday, `1` = Monday … `6` =
+Saturday.[²]
 
-## Why launchd, not cron
-
-| Behavior | cron | launchd |
+| Ritual | Label suffix | `StartCalendarInterval` dict |
 |---|---|---|
-| Machine asleep at scheduled time | Silently drops | Fires at wake |
-| Missed runs after reboot | Lost | RunAtLoad option fires once |
-| Job restart on failure | No | Yes, via KeepAlive |
-| Native macOS integration | No | Yes |
-| Debugging | `/var/log/cron.log` (if available) | `launchctl list`, stdout/stderr paths |
-| Editing format | crontab single line | XML plist file |
+| Morning Triage (daily 09:00) | `daily-triage` | `Hour=9  Minute=0` |
+| Monday plan (Mon 09:00) | `monday-plan` | `Weekday=1  Hour=9  Minute=0` |
+| Friday retro (Fri 16:00) | `friday-retro` | `Weekday=5  Hour=16  Minute=0` |
+| Monthly cooldown (1st, 09:00) | `monthly-cooldown` | `Day=1  Hour=9  Minute=0` |
 
-For laptops that sleep most nights, the "missed runs" difference is decisive. cron will silently drop your 09:00 Monday ritual roughly 50% of the time.
-
-## Common patterns
-
-### "Run at this specific time daily"
-
-```xml
-<key>StartCalendarInterval</key>
-<dict>
-  <key>Hour</key><integer>9</integer>
-  <key>Minute</key><integer>0</integer>
-</dict>
-```
-
-### "Run every Monday at 09:00"
-
-```xml
-<key>StartCalendarInterval</key>
-<dict>
-  <key>Weekday</key><integer>1</integer>
-  <key>Hour</key><integer>9</integer>
-  <key>Minute</key><integer>0</integer>
-</dict>
-```
-
-Weekday: 0=Sunday, 1=Monday, ..., 6=Saturday.
-
-### "Run every Friday at 16:00"
+So the Friday plist's interval block is:
 
 ```xml
 <key>StartCalendarInterval</key>
@@ -102,186 +70,146 @@ Weekday: 0=Sunday, 1=Monday, ..., 6=Saturday.
 </dict>
 ```
 
-### "Run on a recurring interval"
+The "every 4th week cooldown" the chapter describes can't be expressed in a
+single `StartCalendarInterval` (launchd has no "every N weeks"). Fire monthly on
+the 1st as above and have the script no-op on non-cooldown months, or compute the
+cooldown week in the script. Don't fake it in the plist.
 
-```xml
-<key>StartInterval</key>
-<integer>3600</integer>  <!-- every 3600 seconds = 1 hour -->
+## Loading a plist (modern + legacy)
+
+`launchctl load`/`unload` are now grouped under **"LEGACY SUBCOMMANDS"**; the
+current verbs are `bootstrap`/`bootout` with a **domain target**.[²]
+
+```bash
+# Modern (macOS 11+): bootstrap into the GUI domain for your uid
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.<USER>.daily-triage.plist
+launchctl bootout   gui/$(id -u) ~/Library/LaunchAgents/com.<USER>.daily-triage.plist
+
+# Run once now, ignoring the clock (replaces `launchctl start`)
+launchctl kickstart -k gui/$(id -u)/com.<USER>.daily-triage
+
+# Inspect state (replaces `launchctl list <label>`)
+launchctl print gui/$(id -u)/com.<USER>.daily-triage
+
+# Legacy form, still works, still everywhere in old docs:
+launchctl load   ~/Library/LaunchAgents/com.<USER>.daily-triage.plist
+launchctl unload ~/Library/LaunchAgents/com.<USER>.daily-triage.plist
 ```
 
-### "Run at load AND at scheduled time"
+Gotcha: `launchctl disable` persists across boots and is **not** undone by
+`bootstrap` — you must `enable` first.[²]
 
-```xml
-<key>RunAtLoad</key><true/>
-<key>StartCalendarInterval</key>
-<dict>
-  <key>Hour</key><integer>9</integer>
-</dict>
-```
+## Why launchd, not cron — and how Linux compares
 
-Useful for "if I just loaded the plist after waking, run it now too."
+The decisive property: **missed-run handling.** Per `launchd.plist(5)`,
+`StartCalendarInterval` "will start the job the next time the computer wakes up …
+those events will be coalesced into one event upon wake from sleep" — unlike cron,
+which skips invocations while asleep.[³] For a laptop that sleeps overnight, cron
+drops your 09:00 Monday ritual roughly half the time.
 
-## Where to put scripts
+| Behavior | cron | launchd | systemd timer | anacron |
+|---|---|---|---|---|
+| Asleep at fire time | drops | fires on wake[³] | fires on wake (`Persistent=`)[⁴] | catches up on next run |
+| Multiple missed runs | all lost | **one** coalesced[³] | **one** catch-up[⁴] | one per interval |
+| Sub-day precision | yes | yes | yes | no (daily+ only) |
+| Per-run logging | weak | stdout/err paths | journald | mail/log |
+| Config | crontab line | XML plist | INI units | anacrontab |
 
-The script that runs:
-- Should be at a stable absolute path (launchd doesn't honor `$PATH` reliably)
-- Should be executable (`chmod +x`)
-- Should be tested manually before wiring to launchd
-- Should NOT depend on `cd` to start; use absolute paths everywhere
+launchd and systemd both coalesce to a **single** catch-up, not one run per missed
+slot — parity, not a quirk. Full Linux mapping:
+[linux-systemd-variant](./linux-systemd-variant.md).
 
-Common locations:
-- `~/.local/bin/<script>` — your personal scripts
-- `~/Projects/infra/<infra-repo>/scripts/<script>` — versioned via git
+## Cloud alternative: GitHub Actions `on: schedule`
 
-The plist `ProgramArguments` references the absolute path.
+When a ritual needs **no local machine state**, a scheduled GitHub Actions
+workflow runs even when your laptop is off. Tradeoffs, from the GitHub docs:[⁵]
 
-## Environment variables in launchd
+- Shortest interval is **5 minutes**; the `schedule` event **can be delayed**
+  during high load (notably on the hour) and queued jobs may be **dropped** — so
+  schedule at an offset (`17 9 * * *`, not `0 9`).
+- Runs only on the **default branch**'s latest commit, in **UTC**.
+- **Auto-disabled after 60 days** of no repository activity (an email warns you).
 
-launchd does NOT load your shell rc files. Your script does not have `LINEAR_API_TOKEN` set unless you set it explicitly.
+Use GitHub Actions for stateless/cloud rituals (a digest email, a Linear API
+sweep). Use a local plist/timer for anything that must touch **your** files,
+LAN, or local credentials — the cloud runner can't.
 
-Two patterns:
+## Environment variables and secrets
 
-**a. Set env in the plist:**
-```xml
-<key>EnvironmentVariables</key>
-<dict>
-  <key>PATH</key><string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>
-  <key>LINEAR_API_TOKEN</key><string>...</string>  <!-- NOT recommended, plist is plaintext -->
-</dict>
-```
+launchd does not load your rc files. A plist's `EnvironmentVariables` is
+**plaintext** — never put a token there. Load secrets at runtime from your
+password manager instead:
 
-Plist is plaintext → never put secrets here.
-
-**b. Have the script load secrets from your password manager:**
 ```bash
 #!/usr/bin/env bash
 export LINEAR_API_TOKEN="$(rbw get 'Linear API' --field linear_api_key)"
-# Now run the workflow
 ```
 
-Pattern (b) is correct. The script invokes the password-manager CLI at runtime; secrets stay encrypted at rest.
+See [Chapter 05 — Bitwarden via rbw](../05-secrets-and-secure-defaults/bitwarden-via-rbw.md).
+After a long sleep `rbw` may be locked; the first morning run fails silently and
+you unlock interactively at next login. Guard scripts with `set -euo pipefail`
+and ntfy-on-failure (below).
 
-This requires `rbw` (or equivalent) to be unlocked. If the machine has been sleeping, you may need to handle the unlock case — typically the agent runs and silently fails on the first invocation; you unlock interactively at next login.
+## macOS 2025–2026 gotchas
 
-## Verifying scheduled runs
+**"StartCalendarInterval implies RunAtLoad" is folklore.** The archived Apple
+guide and many blogs assert it; the **current** `launchd.plist(5)` does not.[³]
+If you want a catch-up at load time, set `RunAtLoad` explicitly:
 
-A few patterns:
-
-```bash
-# What's loaded?
-launchctl list | grep <your-label-prefix>
-
-# When did it last run? When will it run next?
-launchctl print user/$(id -u)/com.<your>.monday-plan
-
-# Run it now (test)
-launchctl start com.<your>.monday-plan
-
-# Force unload + reload (after editing)
-launchctl unload ~/Library/LaunchAgents/com.<your>.monday-plan.plist
-launchctl load ~/Library/LaunchAgents/com.<your>.monday-plan.plist
+```xml
+<key>RunAtLoad</key><true/>
 ```
 
-For visibility: every plist should redirect stdout/stderr to a path under `/tmp/` or `~/Library/Logs/`. When debugging, those paths are your trail.
+**Bare `$PATH`.** No Homebrew paths. Set `PATH` in the plist or the script.[¹]
 
-## On Linux: use systemd timers
+**TCC / Full Disk Access.** An agent that touches protected paths (Desktop,
+Documents, Mail) needs FDA granted manually in System Settings → Privacy. TCC
+prompts only appear in a GUI login session; an agent with no session is
+**default-denied** when no record exists.[⁶]
 
-If you're on Linux, the equivalent is `systemd` user timers:
+**Code-signing identity matters.** TCC ties grants to a stable code-signing
+identity; ad-hoc/re-signed helpers get inconsistent Full Disk Access.[⁶]
 
-```
-# ~/.config/systemd/user/monday-plan.timer
-[Unit]
-Description=Monday plan trigger
+**SIP ignores injected env vars.** `DYLD_*`, `BASH_ENV`, etc. are stripped for
+SIP-protected processes — deliberate hardening, don't fight it.[⁷]
 
-[Timer]
-OnCalendar=Mon *-*-* 09:00:00
-Persistent=true   # the "handles missed runs" behavior
+**Don't hardcode a SIGTERM grace number.** Stopping a job sends `SIGTERM` then
+`SIGKILL` after `ExitTimeOut`; the default is "system-defined" and sources
+disagree (5 vs 10 vs 20 s).[⁸] Set `ExitTimeOut` explicitly if it matters; never
+set it to `0` (interpreted as infinity, can stall shutdown).
 
-[Install]
-WantedBy=timers.target
-```
+**Apple Silicon vs Intel FDA divergence.** On macOS 15.x, app-bundled-daemon FDA
+toggles have been reported to persist on Apple Silicon but flip back on Intel.[⁶]
+Re-verify after OS updates.
 
-```
-# ~/.config/systemd/user/monday-plan.service
-[Unit]
-Description=Monday plan workflow
+**Validate before loading.** `plutil ~/Library/LaunchAgents/foo.plist` catches XML
+typos that otherwise fail with an opaque parse error. Editing a loaded plist
+needs `bootout` then `bootstrap` — in-place edits leave the old version running.
 
-[Service]
-Type=oneshot
-ExecStart=/home/<u>/.local/bin/monday-plan
-```
+## Innovative patterns (condensed)
 
-Load:
-```bash
-systemctl --user enable monday-plan.timer
-systemctl --user start monday-plan.timer
-```
-
-`Persistent=true` is the launchd equivalent — handles missed runs after machine wake.
-
-## Field-tested gotchas
-
-**Plist permission bits matter.** A plist owned by another user, or non-readable, won't load. Verify with `ls -la ~/Library/LaunchAgents/`.
-
-**Editing a loaded plist requires unload-reload.** Editing in place without unloading first leaves the old version running. Unload, edit, load.
-
-**A typo in plist XML produces "Could not parse" error.** `plutil ~/Library/LaunchAgents/foo.plist` validates the syntax before loading.
-
-**launchd kills runs that exceed 5-second SIGTERM.** Long-running scripts get killed. For long-running, daemonize the work and have launchd just kick it off.
-
-**`$HOME` in scripts run by launchd is set to your home, but `$PATH` is bare.** Set PATH explicitly in your script or the plist.
-
-**LaunchAgent vs LaunchDaemon.** Agents run as your user when you're logged in. Daemons run system-wide. For personal rituals, always Agents (in `~/Library/LaunchAgents/`).
-
-**The `StartCalendarInterval` plist semantics are picky.** A plist with both `StartInterval` AND `StartCalendarInterval` typically ignores one. Pick one.
-
-## Innovative pattern: tmux-aware triggers
-
-Your script checks for an active tmux session and routes output to a specific pane:
-
-```bash
-if tmux has-session -t main 2>/dev/null; then
-  tmux send-keys -t main:0.0 "less /tmp/monday-plan.out" Enter
-fi
-```
-
-When you arrive Monday morning, the worksheet is already open in your main tmux pane.
-
-## Innovative pattern: ntfy on failure only
-
-If the script succeeded, no notification. If it failed, ntfy to your phone with the error:
-
-```bash
-#!/usr/bin/env bash
-set -e
-{
-  # Your workflow
-} || {
-  curl -d "Monday plan failed: $(tail -3 /tmp/monday-plan.err)" \
-       ntfy.sh/<your-topic>
-  exit 1
-}
-```
-
-You're not pinged for routine success; you ARE pinged when something needs attention.
-
-## Innovative pattern: chained ritual triggers
-
-Some rituals depend on others. Friday retro should run AFTER the week's Project Updates are filed.
-
-Solution: ritual-A fires, on success kicks ritual-B via `launchctl start`:
-
-```bash
-# In ritual-A's script
-post-update.sh
-launchctl start com.<your>.friday-retro
-```
-
-The dependency is expressed in the script, not in launchd config. Easier to reason about.
+- **ntfy on failure only.** Wrap the workflow; on non-zero exit, push the last
+  error lines to your phone (silent on success). See
+  [ntfy-notifications](./ntfy-notifications.md).
+- **tmux-aware output.** If `tmux has-session -t main`, `send-keys` the worksheet
+  into pane 0 so it's open when you arrive.
+- **Chained triggers.** Express ritual ordering in the script (`launchctl
+  kickstart` the next ritual on success), not in launchd config.
 
 ## Related
 
-- [Monday planning](./monday-planning.md) — script that launchd fires
-- [Friday retro](./friday-retro.md) — script that launchd fires
+- [linux-systemd-variant](./linux-systemd-variant.md) — the Linux equivalents
+- [Monday planning](./monday-planning.md) / [Friday retro](./friday-retro.md) — the scripts launchd fires
 - [ntfy notifications](./ntfy-notifications.md) — what the script pushes
-- [Chapter 06 — Session discipline](../06-session-discipline/) — wrap/resume patterns that hook into rituals
+- [Chapter 05 — Secure defaults](../05-secrets-and-secure-defaults/) — runtime secret loading
+
+---
+
+[1]: https://lucaspin.medium.com/where-is-my-path-launchd-fc3fc5449864 — practitioner: launchd gives a bare PATH, no Homebrew dirs — accessed 2026-05-31
+[2]: https://ss64.com/mac/launchctl.html — launchctl reference: load/unload legacy, bootstrap/bootout/print/enable current — accessed 2026-05-31
+[3]: https://raw.githubusercontent.com/apple-oss-distributions/launchd/main/man/launchd.plist.5 — `launchd.plist(5)`: StartCalendarInterval coalesces missed runs on wake; RunAtLoad default false — accessed 2026-05-31
+[4]: https://raw.githubusercontent.com/systemd/systemd/main/man/systemd.timer.xml — `systemd.timer(5)`: `Persistent=` single catch-up — accessed 2026-05-31
+[5]: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows — GitHub Actions `schedule`: 5-min floor, high-load delay/drops, default-branch-only, 60-day disable — accessed 2026-05-31
+[6]: https://developer.apple.com/forums/thread/661178 — Apple DTS: FDA from a launchd daemon, GUI-session prompts, code-signing attribution (see also thread/804548 for Apple-Silicon-vs-Intel divergence) — accessed 2026-05-31
+[7]: https://hackyboiz.github.io/2025/05/11/clalxk/MacOS_SIP-Bypass_en/ — SIP strips injected env vars from protected processes — accessed 2026-05-31
+[8]: https://www.launchd.info/ — practitioner: SIGTERM→SIGKILL after ExitTimeOut (cites 20s; man page says system-defined) — accessed 2026-05-31
