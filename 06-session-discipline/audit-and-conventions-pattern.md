@@ -129,6 +129,43 @@ Canonical rules for <scope>.
 
 The changelog links each version bump to the audit that justified it. The link makes "why did v1.1 happen?" answerable in two clicks.
 
+## Relationship to ADRs (Architecture Decision Records)
+
+The audit/convention split is a re-cut of a well-known pattern. Michael Nygard's 2011 **Architecture Decision Record** is a single immutable file per decision with five sections — Title, Status, Context, Decision, Consequences — where a reversed decision is never deleted, only marked `superseded` and linked to its replacement.[¹] The canonical template repo (joelparkerhenderson) confirms the structure has barely changed since.[²]
+
+The playbook **splits the ADR along its own seam**: an ADR fuses the *current rule* and the *history of how it got there* into one file. This chapter separates them:
+
+| ADR (Nygard) | Playbook equivalent |
+|---|---|
+| Title + Decision (the rule) | **Convention** file — the current, locked rule, edited in place |
+| Context (why) | The **audit** that justified the convention version |
+| Status: `superseded` + link | Convention **changelog** entry linking the superseding audit |
+| Consequences | Audit's "Decisions" + "Followups" sections |
+
+Why split rather than adopt ADRs wholesale: a solo dev asks "what's the rule *now*?" far more often than "what was the rule in March?" Keeping the live rule in one always-current file (the convention) makes the common query an `open file`, not a `grep the dated log for the latest unsuperseded record`. The audits preserve the ADR's immutability guarantee for the rare historical query.
+
+**When to write which:**
+
+| You have… | Write a… |
+|---|---|
+| A rule that applies going forward | **Convention** (+ an audit if it supersedes a prior rule) |
+| A record of what a session changed | **Audit** |
+| A one-off architectural decision with no ongoing "rule" to lock | **ADR** proper — drop a `decisions/NNNN-<slug>.md` in Nygard format |
+
+The third row is the honest gap: not every decision becomes a standing rule. "We chose Postgres over SQLite for the sync ledger" is a one-time call with consequences but no rule to enforce daily — that's a literal ADR, and the playbook is happy to host a `decisions/` folder beside `conventions/` and `audits/` for exactly those. Use Nygard's template verbatim; don't reinvent it.
+
+### One of each, concretely
+
+```
+conventions/naming.md      # RULE:  "slugs are lowercase-kebab" (locked v1.2)
+audits/2026-05-18-rename-pm-system.md   # EVENT: "today we renamed X→Y; bumped naming to v1.2 because…"
+decisions/0007-sync-ledger-postgres.md  # ADR:   "Status: accepted. Context… Decision: Postgres. Consequences…"
+```
+
+### The living-documentation angle
+
+Cyrille Martraire's *Living Documentation* argues the most reliable docs are the ones generated from, or living next to, the work itself — so they can't rot out of sync.[³] This pattern is that idea applied to *decisions*: because conventions and audits live in the repo and move through `git`, `git log conventions/naming.md` is a generated, always-accurate history of the rule. There's no separate wiki to drift. The repo is the living document.
+
 ## Working state vs. audit vs. memory
 
 Three places, three jobs:
@@ -204,3 +241,9 @@ Anyone (including future-you) can `git checkout conventions/naming-v1.0` to see 
 - [Chapter 02 — Filesystem conventions](../02-filesystem-conventions/) — the conventions files for layout/slug
 - [Chapter 01 — Cycles and rituals](../01-linear-as-load-bearing-pm/cycles-and-rituals.md) — the conventions files for cycles
 - [Wrap and resume](./wrap-and-resume.md) — the per-session companion to per-topic audits
+
+---
+
+[¹]: Michael Nygard, "Documenting Architecture Decisions" (2011) — the original ADR essay, Title/Status/Context/Decision/Consequences; superseded-not-deleted. Mirrored at https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions.html — accessed 2026-05-31.
+[²]: Joel Parker Henderson, canonical ADR template + Nygard format — https://github.com/joelparkerhenderson/architecture-decision-record ; see also Martin Fowler, "Architecture Decision Record" — https://martinfowler.com/bliki/ArchitectureDecisionRecord.html — accessed 2026-05-31.
+[³]: Cyrille Martraire, *Living Documentation: Continuous Knowledge Sharing by Design* (Addison-Wesley, 2019) — documentation that lives with the code can't drift out of sync. — accessed via publisher summary 2026-05-31.
