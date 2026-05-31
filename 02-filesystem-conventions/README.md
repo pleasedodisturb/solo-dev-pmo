@@ -47,6 +47,21 @@ This is different from:
 
 The convention file is the canonical answer to "what's our rule for X?" Open the file, get the current rule.
 
+## A short history of `~/Projects` conventions
+
+There is no RFC for where code lives on disk — `~/Code`, `~/src`, `~/dev`, and `~/Projects` are all informal, per-practitioner habits. The one era that *did* dictate layout was Go's `GOPATH`: from 2009–2018 all code had to live under `$GOPATH/src/<host>/<user>/<repo>`, where the on-disk path mirrored the import path.[¹] Go 1.11 (2018) introduced modules and explicitly freed projects from that tree — "the `go` command enables the use of modules when the current directory or any parent directory has a `go.mod`, provided the directory is outside `$GOPATH/src`."[²] Tools like `ghq` later generalized the `host/user/repo` idea to every VCS host.[³]
+
+The takeaway for this chapter: once the language stopped *forcing* a layout, the choice became yours — and a thought-out convention beats accretion. Layout B is one defensible choice, not the only one.
+
+## When flat is fine (the honest counter-argument)
+
+Categories are not free, and not everyone needs them. Two honest counter-positions:
+
+- **Fuzzy finders make hierarchy optional.** Once `fzf`/`zoxide` index your tree, you jump by frecency or fuzzy match, not by remembering folders — so the retrieval value of categories shrinks.[⁴] If your launcher is good, a flat `~/Projects/` with 15 repos is genuinely fine.
+- **Hierarchy can discourage the right code.** Mark Seemann argues flat structures stop you from agonizing over "which folder does this belong in"; nesting "subtly discourage[s] developers from introducing code that doesn't fit."[⁵] (His argument is about files inside a project, but it transfers.)
+
+Our position: **below ~15 repos, stay flat.** Layout B earns its one-extra-`cd` cost only once `ls ~/Projects/` stops being scannable — empirically around 30+. Adopt it when you feel the zoo, not before.
+
 ## How to bootstrap if you're starting fresh
 
 1. Read [Layout B](./layout-b-subfolders.md) — pick categories that match your work.
@@ -70,3 +85,13 @@ Field-tested timing: 30-50 repos = 2-3 weeks of weekend work for careful migrati
 
 - [Chapter 03 — CLAUDE.md template](../03-claude-code-as-operator/claude-md-template.md) — every project gets one at the repo root
 - [Chapter 06 — Audit and conventions pattern](../06-session-discipline/audit-and-conventions-pattern.md) — how the convention files relate to dated audits
+- [Migration recipe](./migration-recipe.md) — the cleanup procedure, blown out with safety rules and fix scripts
+- [Sources](./sources.md) — full bibliography for this chapter
+
+## Sources
+
+- [¹] https://go.dev/wiki/GOPATH — accessed 2026-05-31
+- [²] https://go.dev/blog/using-go-modules — accessed 2026-05-31
+- [³] https://github.com/x-motemen/ghq — accessed 2026-05-31
+- [⁴] https://thoughtbot.com/blog/tools-i-like-zoxide — accessed 2026-05-31
+- [⁵] https://blog.ploeh.dk/2023/05/29/favour-flat-code-file-folders/ — accessed 2026-05-31
