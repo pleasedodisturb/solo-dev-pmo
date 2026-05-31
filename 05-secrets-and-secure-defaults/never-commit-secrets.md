@@ -1,194 +1,172 @@
 # Never commit secrets
 
-> Pre-commit hooks, secret-scanning, and recovery procedure. Treat any committed secret as compromised — rotate first, clean up after.
+> Pre-commit hooks, secret-scanning, and recovery. Treat any committed secret as compromised — rotate first, clean up after.
 
 ## The defense in depth
 
-Three layers:
-
-1. **Cultural** — never type a secret into a file that's tracked by git
-2. **Mechanical** — pre-commit hooks reject commits containing secret patterns
-3. **Cleanup** — when a secret slips through, rotate immediately; force-push removal is a distant second priority
+1. **Cultural** — never type a secret into a tracked file.
+2. **Mechanical** — pre-commit hooks reject commits containing secret patterns.
+3. **Cleanup** — when one slips, rotate immediately; history rewrite is a distant second.
 
 ## Layer 1: cultural
 
-Habits that prevent commits in the first place:
+- Env vars for secrets in code; never inline tokens.
+- `.env.example` (no real secrets, committed) + `.env` (real secrets, gitignored).
+- Secrets retrieved at runtime via the password-manager CLI ([Bitwarden via rbw](./bitwarden-via-rbw.md)).
+- Eyeball `git diff` before every commit for token-looking strings.
 
-- Use environment variables for secrets in code; never inline tokens
-- Use `.env.example` (without real secrets, committed) + `.env` (with real secrets, gitignored)
-- Have secrets retrieved at runtime via password manager CLI (see [Bitwarden via rbw](./bitwarden-via-rbw.md))
-- Audit `git diff` before every commit — eyeball for token-looking strings
+The cultural layer fails first. The others exist because it does.
 
-The cultural layer fails first. The other layers exist because it does.
+## Layer 2: pre-commit hooks (working config)
 
-## Layer 2: pre-commit hooks
+This `.pre-commit-config.yaml` is copy-paste-runnable. **You run it locally** — it can't be exercised in a cloud session.
 
-Set up `pre-commit` (or your equivalent) with secret-detection.
-
-`.pre-commit-config.yaml`:
 ```yaml
+# .pre-commit-config.yaml — active after `pre-commit install`
 repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1            # pin latest: github.com/gitleaks/gitleaks/releases
+    hooks:
+      - id: gitleaks
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.5.0
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
-  - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.18.0
-    hooks:
-      - id: gitleaks
 ```
 
-`detect-secrets` does entropy-based pattern detection. `gitleaks` has more curated patterns. Run both.
-
-Generate the baseline (allowlist of known-safe-secret-like strings):
 ```bash
-detect-secrets scan > .secrets.baseline
+pipx install pre-commit detect-secrets    # or brew/uvx
+detect-secrets scan > .secrets.baseline   # allowlist of known safe-looking strings
 git add .secrets.baseline
-git commit -m "G-XXX: add detect-secrets baseline"
+pre-commit install                        # wire into git commit
 ```
 
-Install hooks:
-```bash
-pre-commit install
-```
+Now `git commit` runs both scanners first. **TESTED LOCALLY ON: ____ (fill in).**
 
-Now `git commit` runs both scanners before allowing the commit.
+### Scanner comparison (2026)
+
+| | `gitleaks` | `detect-secrets` | TruffleHog |
+|---|---|---|---|
+| **Engine** | regex, 150+ rules[¹] | entropy + plugins, baseline | 800+ detectors + live verification[²] |
+| **Speed** | sub-second | fast | minutes→hours (deep scan) |
+| **Verifies key is live?** | no | no | **yes** (calls the provider)[²] |
+| **False positives** | low–moderate | low (curated) | low *after* verification |
+| **Best fit** | pre-commit gate | baseline / allowlist mgmt | CI deep scan |
+| **License** | MIT | Apache-2.0 | AGPL / commercial |
+
+**Recommendation:** `gitleaks` at pre-commit (speed), `detect-secrets` baseline to manage known false positives, **TruffleHog in CI** when you want "is this leaked key still live?" verification.[¹][²] Run the fast ones locally; run the thorough one server-side.
+
+### GitHub Secret Scanning — when is it enough?
+
+GitHub's built-in scanning (free on public repos) with **push protection** blocks known partner patterns *at push*, and its partner program auto-revokes some tokens (AWS, Stripe, GitHub).[³] It is **server-side, after the push leaves your laptop.** Local pre-commit still matters for: private repos without Advanced Security, custom/non-partner secret formats, and catching the secret *before* it ever reaches a remote. Use both; they don't overlap.
 
 ## Layer 3: cleanup procedure
 
-When you slip and commit a secret:
+### Step 0–2: rotate first
 
-### Step 0: Treat as compromised
-
-The moment a secret hits a public repo (or even a private repo if collaborators or automation have read access), treat the secret as compromised. The next steps are damage control, not cleanup.
-
-### Step 1: Rotate the secret immediately
-
-Go to the source service:
-- Linear: linear.app/settings/api → revoke + create new
-- Anthropic: console.anthropic.com → revoke + create new
-- GitHub: github.com/settings/tokens → delete + create new
-- AWS: IAM console → delete + create new
-
-Get the new secret. Old one is now dead.
-
-### Step 2: Update your password manager
+The moment a secret hits any remote (even a private repo with automation read access), **treat it as compromised.** Rotate it at the source (Linear, Anthropic, GitHub, AWS — revoke + create new), then update the vault:
 
 ```bash
 rbw edit "Linear API" --field linear_api_key=<new-token>
-# Re-source zshrc to pick up new value
-exec $SHELL
+exec $SHELL   # re-source to pick up the new value
 ```
 
-### Step 3: Sweep for stale references
+### Step 3: sweep for stale references
 
 ```bash
-# In the leaked-from repo
-grep -rn "<old-secret>" .
-# In your home dir
-grep -rln "<old-secret>" ~/.* 2>/dev/null
-# In your shell history
-grep "<old-secret>" ~/.zsh_history ~/.bash_history 2>/dev/null
+grep -rn "<old-secret>" .                                  # this repo
+grep -rln "<old-secret>" ~/.* 2>/dev/null                  # home dir
+grep "<old-secret>" ~/.zsh_history ~/.bash_history 2>/dev/null  # shell history
 ```
 
-Wherever it appears, fix it.
+### Step 4: rewrite history with `git filter-repo` (lowest priority)
 
-### Step 4: Force-push removal (lowest priority)
+`git filter-repo` is the recommended tool in 2026 — `git filter-branch` is deprecated, and BFG, while simpler/faster for blobs, is a narrower hammer.[⁴] This walkthrough is **written, not executed** against this repo.
 
 ```bash
-git filter-repo --replace-text <(echo "<old-secret>=REMOVED")
-git push --force origin <branch>
+# WRITTEN, NOT EXECUTED. Run ONLY after you have already rotated the secret.
+pipx install git-filter-repo               # or: brew install git-filter-repo
+
+cd /tmp && git clone --mirror git@github.com:you/repo.git   # filter-repo wants a clean mirror
+cd repo.git
+
+echo 'AKIAEXAMPLE1234==>REMOVED' > /tmp/replacements.txt    # old==>new, one per line
+git filter-repo --replace-text /tmp/replacements.txt
+
+git push --force --all
+git push --force --tags
 ```
 
-Or use BFG Repo-Cleaner.
+**Caveats everyone skips:**
 
-**This is the LAST step, not the first.** GitHub indexes commits; scrapers exist. By the time you force-push, the secret has been seen. Rotation is the only real fix.
+- History rewrite changes every commit SHA from the touched commit forward. Collaborators must re-clone; open PRs break.
+- GitHub keeps **unreachable commits reachable by SHA** for a while, and forks / PR mirrors / caches may retain the old blob. You must email GitHub Support to purge cached views.[³]
+- Scrapers and search engines may already hold the value.
+- **Therefore: rotation is the fix; `filter-repo` is hygiene.** Never reason "I rewrote history fast enough, so the secret is safe." It isn't.
 
-### Step 5: Document what happened
+### Step 5: document it
 
-In your meta-PM audit log: a dated entry describing what leaked, how, what the rotation involved. This is so future-you (and your agents) know to avoid the same pattern.
+A dated entry in the audit log: what leaked, how, what rotation involved — so future-you and your agents avoid the same pattern.
 
-If the leaked secret is in a public OSS repo, GitHub may auto-detect and email you. Don't ignore those emails.
+## After a major supply-chain incident
 
-## `.gitignore` patterns
+When news breaks that a package you *might* depend on was compromised (lottie-player, axios, chalk/debug, ledger connect-kit — full inventory in [supply-chain-2026](./supply-chain-2026.md)):
+
+1. **Scope exposure:** `npm ls <pkg>` / `pnpm why <pkg>` / lockfile grep for the bad version + dates.
+2. **If you installed or built in the malicious window:** assume every secret reachable by your build/dev/CI environment is compromised.
+3. **Roll back** to a known-good pinned version; `npm ci` from a clean lockfile; delete `node_modules`.
+4. **Verify** with `npm audit signatures` + provenance ([supply-chain-2026](./supply-chain-2026.md)).
+5. **Rotate** npm/cloud/CI credentials that lived in any environment the malicious code could read.
+6. **Document** in the audit log.
+
+## `.gitignore` baseline
 
 ```gitignore
-# Secret files
 .env
 .env.local
 .env.*.local
 *.key
 *.pem
 secrets/
-private-keys/
-
-# Tool-specific
 .linear_api_token
 .anthropic_token
 .aws/credentials
-.docker/config.json
 .netrc
-
-# Editor backups that may contain secrets
 *.swp
-*~
 .DS_Store
 ```
 
-Audit your `.gitignore` quarterly.
-
-## Branches and PRs that should never reach review
-
-Some patterns are tells that someone is about to commit secrets:
-- A new `.env` file in a PR
-- A file `secrets.json` or `credentials.json` in a PR
-- A `tokens/` directory
-- A `*.pem` or `*.key` file
-
-CI should fail loudly on these patterns. Pre-merge protection.
+Audit quarterly. **`.env` files that "are gitignored" but were tracked before `.gitignore`:** `git ls-files | grep .env` should return nothing; if it does, `git rm --cached .env`.
 
 ## Field-tested gotchas
 
-**`.env` files that "are gitignored" but track because they were added before `.gitignore`.** Check: `git ls-files | grep .env` should return nothing. If it does, `git rm --cached .env` and `git commit -m "G-XXX: remove tracked .env"`.
+**Secrets in commit messages / branch names.** Many hooks check files, not messages. `feature/token-aabbccdd` leaks a token in the ref. Habituate to clean names; add a commit-msg hook.
 
-**Secrets in commit messages.** Some pre-commit hooks check files but not commit messages. Add a hook for that too.
+**Secrets in Linear ticket bodies.** Treat ticket bodies as low-trust — automation touches `route/agent` tickets. Don't paste tokens.
 
-**Secrets in branch names.** Less common; still possible. "feature/with-token-aabbccdd" leaks the token. Habituate to non-token branch names.
+**GitHub auto-revoked it for you.** AWS/Stripe/GitHub tokens caught by partner scanning may already be dead — a revoked-by-GitHub email means get a new one.
 
-**Secrets in Linear ticket bodies.** Linear is private by default but `route/agent` tickets get touched by automation. Treat Linear ticket bodies as "low-trust public" — don't paste tokens.
+## Innovative pattern: two-layer hooks + telemetry
 
-**Force-push that goes to the wrong remote.** Push to `origin <branch>` first; verify; then think about other remotes. Force-pushing to the wrong remote can amplify the leak.
-
-**GitHub's secret scanning sometimes auto-revokes the secret.** AWS, Stripe, others. If you see a revoked-by-GitHub email, the secret was already invalidated. Get a new one.
-
-## Innovative pattern: pre-push secret scan as global hook
-
-In addition to pre-commit (per repo), a global pre-push hook checks any pushed commits for secrets:
+Global pre-push hook as a backstop to per-repo pre-commit — if a repo lacks its own config, the global one still catches it:
 
 ```bash
-# ~/.claude/git-hooks/pre-push
-# Runs for every push from every repo
-detect-secrets-hook --baseline .secrets.baseline $(git diff --name-only origin/$(git rev-parse --abbrev-ref HEAD) HEAD)
+git config --global core.hooksPath ~/.claude/git-hooks   # holds a pre-push that runs detect-secrets-hook
 ```
 
-Wire via `git config --global core.hooksPath ~/.claude/git-hooks`.
-
-Two layers — repo-level pre-commit AND global pre-push. If the repo doesn't have its own hook, the global one catches it.
-
-## Innovative pattern: token telemetry
-
-Every script that loads a token from rbw logs the load to a local file:
-
-```bash
-echo "$(date) $0 LINEAR_API_TOKEN loaded" >> ~/.local/share/token-usage.log
-```
-
-Weekly: review which tokens get loaded by which scripts. Surprises (e.g., "why is this script accessing my AWS token?") become visible.
+Pair with light token telemetry — each script that loads a token appends `"$(date) $0 <TOKEN> loaded"` to `~/.local/share/token-usage.log`. Weekly review surfaces surprises ("why is *this* script reading my AWS token?").
 
 ## Related
 
 - [Bitwarden via rbw](./bitwarden-via-rbw.md) — where secrets live at rest
-- [SSH agent via rbw](./ssh-agent-via-rbw.md) — SSH keys specifically
-- [Git signing](./git-signing.md) — the signing key is a secret too
+- [Supply chain 2026](./supply-chain-2026.md) — full incident inventory + provenance
+- [Cloud-session pattern](./cloud-session-pattern.md) — secrets without `rbw`
 - [Chapter 03 — Browser tools](../03-claude-code-as-operator/browser-tools.md) — never use on credential pages
+
+---
+
+[¹]: https://github.com/gitleaks/gitleaks — accessed 2026-05-31
+[²]: https://github.com/trufflesecurity/trufflehog — accessed 2026-05-31
+[³]: https://docs.github.com/en/code-security/secret-scanning/about-secret-scanning — accessed 2026-05-31
+[⁴]: https://github.com/newren/git-filter-repo — accessed 2026-05-31
