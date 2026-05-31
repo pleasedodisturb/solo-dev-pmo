@@ -17,6 +17,8 @@ The exact origin: a solo dev's recurring failure mode of "next session: file tic
 
 The deferral feels rational ("I'm in the middle of something"). It isn't. The "in the middle of something" focus is precisely what makes you forget. By the time the current task ends, the captured insight has decayed.
 
+This is the operational form of GTD's founding claim: "your mind is for having ideas, not holding them."[¹] David Allen's whole system rests on an "inverse relationship between things on your mind and those things getting done" — get the open loop into a trusted external system *now* so your head is clear for the current task.[¹] Never-defer is that principle with teeth: the trusted system only stays trusted if you file *immediately*, at full quality, instead of holding "I'll write it up later" in working memory (where it rots).
+
 ## What counts as ticket-worthy
 
 File the ticket NOW when you notice:
@@ -115,6 +117,22 @@ Agent: writes the full spec, files it, replies with the URL.
 You: keep working.
 
 Pre-filling the agent with the ticket-standard format makes this near-instant. The 3-minute filing cost goes to the background; you stay in flow.
+
+## What this rules out
+
+- **No "mental TODO."** The moment you trust your memory instead of the system, the system stops being the single source of truth and you're back to forgetting.
+- **No low-quality "placeholder" tickets to clear the thought.** A stub just defers the real spec to future-you. File it at the [ticket standard](./ticket-standard.md), or quick-*capture* it to Triage and let the morning pass mature it — but don't file a half-ticket and call it done.
+- **No implicit deferral.** Only an *explicit* "don't file this" (yours or a collaborator's) overrides the rule. "I'll get to it" is not deferral; it's forgetting.
+
+## Field tests beyond the author
+
+No external write-up publishes this exact "never defer ticket creation" rule by name — it's the author's framing. Its grounding is GTD's capture discipline ("get everything out of your head into a trusted system")[¹] and the broader practitioner consensus that *captured-immediately* beats *captured-later*. The honest status: the rule is author-original in wording, GTD-derived in principle, and field-tested at one engineer's scale; the cost numbers below are from that engineer's audits, not an external study.
+
+## Sources
+
+External quotes gathered via web search 2026-05-31; the GTD lines are cross-confirmed across the official site, Wikipedia, and Wikiquote. Full notes in [`sources.md`](./sources.md).
+
+- [1]: David Allen, *Getting Things Done* — https://gettingthingsdone.com/about/ ; "inverse relationship" via https://en.wikipedia.org/wiki/Getting_Things_Done — accessed 2026-05-31
 
 ## Related
 
