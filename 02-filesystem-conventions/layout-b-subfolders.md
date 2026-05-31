@@ -193,6 +193,14 @@ A small daily `launchd` job runs `repo-sync-tool` (or your own equivalent) that:
 
 Convention enforcement at the filesystem level. Drift gets visible the day after.
 
+## What we'd change in 2026
+
+Honest second-guesses after living with this:
+
+- **Eleven categories is one or two too many.** `cases/` and `money/` rarely earn their own top-level slot; starting fresh we'd fold low-traffic categories into a single `personal/` and split later only if one grows. Categories should be *discovered*, not pre-declared.
+- **A provenance/purpose hybrid for `upstream/`.** The cleanest split we've seen is: keep purpose categories for code *you own*, but let a `ghq`-style `host/user/repo` tree handle `upstream/` (other people's repos you clone a lot). Purpose-sorting code you'll never browse by purpose is wasted effort.
+- **Lean even harder on tool-derived identity.** The launcher already derives the project name from `git rev-parse --show-toplevel`, not the path — so in principle the categories are a *human* convenience the tooling doesn't depend on. If we rebuilt today we'd make that explicit: nothing automated may assume a fixed depth.
+
 ## Sources
 
 - [¹] https://code.dblock.org/2016/03/25/a-directory-structure-for-oss-and-work-github-clones.html — accessed 2026-05-31

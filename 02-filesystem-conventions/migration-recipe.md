@@ -176,6 +176,20 @@ sudo mdutil -E /        # rebuild Spotlight index if mdfind is stale[⁸]
 
 ---
 
+## Tool version notes (2026)
+
+The fix scripts assume reasonably current tooling. The capabilities that matter:
+
+| Capability | What it does | Available since |
+|---|---|---|
+| `git worktree repair` | reconnect a worktree after the main repo moved | Git 2.30 (2020) |
+| `git worktree move` / `remove` | relocate / drop a worktree safely | Git 2.17 (2018) |
+| Go modules default (no GOPATH layout) | disk path no longer must mirror import path | Go 1.16 (2021) |
+| `uv venv --relocatable` | build a venv with no hardcoded absolute paths | current `uv` |
+| PyPI name normalization (PEP 503/508) | lowercase + collapse `[-_.]` runs | stable spec |
+
+If you're on older git (pre-2.30), `worktree repair` is unavailable — remove and recreate worktrees instead.
+
 ## Sources
 
 - [¹] https://docs.python.org/3/library/venv.html — accessed 2026-05-31
