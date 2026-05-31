@@ -13,9 +13,11 @@ The undersell is that Triage works for *any* issue regardless of where it came f
 What makes Triage right as the inbox:
 
 - **Tool-enforced single source of truth.** All integration sources (email, Slack, webhook) land here by default. If you route *your own captures* here too, you have one inbox.
-- **Triage Intelligence** auto-suggests assignees, projects, and labels — pre-routes captures, reducing triage friction.
+- **Triage Intelligence** auto-suggests assignees, projects, and labels — pre-routes captures, reducing triage friction. **(Business/Enterprise plans only[³] — the manual morning pass below is the free-tier baseline and is sufficient on its own.)**
 - **`snoozedUntilAt` works on Triage items.** You can defer ambiguous captures to next week without leaving Triage.
-- **It's persistent and indexable.** Unlike Linear's Inbox (notification feed, hard-capped at 500), Triage doesn't drop items.
+- **It's persistent and indexable.** Unlike Linear's Inbox (notification feed, hard-capped — **2,000 items** as of 2026[¹]), Triage doesn't drop items.
+
+This is the same instinct David Allen's *Getting Things Done* is built on: "your mind is for having ideas, not holding them."[²] Triage-as-inbox is GTD's *capture* step ("collect what has your attention into a trusted external system") implemented in your PM tool — one inbox you trust, so nothing lives in your head or a Slack DM.
 
 ## Triage vs. Inbox vs. Backlog (often confused)
 
@@ -24,12 +26,12 @@ These are three different things in Linear. Confusing them is a top-five solo-Li
 | State | Purpose | Hard cap | Notification semantics |
 |---|---|---|---|
 | **Triage** | The inbox state for issues. Items here have no Cycle, no Project assignment guarantee. | None | Items appear in views; no badge |
-| **Inbox** | The notification feed. Auto-subscribes you to issues you created / are assigned / are mentioned. | **500 items**, then it drops oldest | Badge in sidebar |
+| **Inbox** | The notification feed. Auto-subscribes you to issues you created / are assigned / are mentioned. | **2,000 items** `[2026-Q1: changed from 500]`[¹] | Badge in sidebar |
 | **Backlog** | A state for issues that are out of the active queue but kept around. | None | Items appear in views; no badge |
 
 **Rule:** Triage is the inbox you process. Inbox (notifications) is signal, not storage. Backlog is hibernation-lite (see [snooze-as-hibernation](./snooze-as-hibernation.md) for the harder hibernation).
 
-If you treat Inbox as your backlog (common mistake), you'll lose stuff when the 500 cap rolls and oldest items get dropped silently.
+If you treat Inbox as your backlog (common mistake), you'll lose stuff when the 2,000 cap rolls and oldest items get dropped silently.
 
 ## The CLI capture (the affordance)
 
@@ -100,7 +102,7 @@ Recipe:
 
 ## Routing automation
 
-Linear's Triage Intelligence (a Linear feature, [docs](https://linear.app/docs/triage)) auto-suggests assignee / project / label. Accept the suggestions when right; override when wrong. Over weeks, suggestions improve.
+Linear's Triage Intelligence (a Linear feature, [docs](https://linear.app/docs/triage); Business/Enterprise only[³]) auto-suggests assignee / project / label. Accept the suggestions when right; override when wrong. Over weeks, suggestions improve. On Free, skip this — manual labeling does the job at solo volume.
 
 Build alongside:
 - **Auto-tag captures** by prefix: a script that adds a `via-cli` label to captures, so you can audit your own capture flow.
@@ -133,6 +135,31 @@ PROJECT_ID="$(jq -r ".[\"$CURRENT_PROJECT\"]" ~/.config/<your-pm>-projects.json)
 Captures from your `app-foo` tmux session auto-suggest the app-foo project. From `command-center`, the Command Center project. This shrinks per-capture friction from "write the title + remember which project + tag" to "write the title."
 
 Tradeoff: the mapping needs maintenance. Worth it once you have 5+ active projects.
+
+## What this rules out
+
+Adopting Triage-as-inbox is a commitment, and it explicitly *forecloses* some things:
+
+- **No second inbox.** If captures also land in a notes app, a Slack "later" channel, or your head, you no longer have a single source of truth and the trust collapses. One inbox or none.
+- **No weekly batch triage.** The pattern requires a *daily* < 10-min pass. If you can only triage weekly, don't adopt this — items pile up and the inbox becomes the dread-Backlog you were avoiding.
+- **No relying on the Inbox (notifications) as storage.** It drops oldest past 2,000 items.[¹] Notifications are signal, not a backlog.
+- **No auto-promotion to a cycle.** Automations and AI may *suggest*; the promote-to-cycle gate stays manual.
+
+If you can't hold the daily pass, a lighter system (a single `todo.md` per repo) is more honest than a Triage inbox you don't process — see the [counter-evidence in snooze-as-hibernation](./snooze-as-hibernation.md#field-tests-beyond-the-author).
+
+## Field tests beyond the author
+
+Practitioners independently describe Triage-as-inbox. A small team migrating off Jira documents using "Triage as an inbox for your team" for unprocessed/incoming issues before they enter the workflow.[⁴] Linear's own Method frames Triage as "a special inbox for your team."[⁵] The deeper lineage is GTD's *capture → clarify → organize* loop;[²] Triage is where capture lands and clarify happens. We did not find a published *solo*-specific Triage-as-inbox case study — the closest are small-team accounts; treat the solo framing as field-tested by the author and corroborated-in-principle.
+
+## Sources
+
+Linear claims verified via Linear's documentation-search MCP on 2026-05-31. External quotes gathered via web search (domains block automated fetch). Full notes in [`sources.md`](./sources.md).
+
+- [1]: Linear, *Inbox* (2,000-notification cap) — https://linear.app/docs/inbox — accessed 2026-05-31
+- [2]: David Allen, *Getting Things Done* — https://gettingthingsdone.com/about/ , https://gettingthingsdone.com/what-is-gtd/ — accessed 2026-05-31
+- [3]: Linear, *Triage* (Triage Intelligence is Business/Enterprise) — https://linear.app/docs/triage — accessed 2026-05-31
+- [4]: Indie Hackers, *Ditch Jira: How we use Linear* — https://www.indiehackers.com/post/ditch-jira-how-we-use-linear-to-build-a-better-product-677d10ac2e — accessed 2026-05-31
+- [5]: Linear, *Linear Method* — https://linear.app/method/introduction — accessed 2026-05-31
 
 ## Related
 
