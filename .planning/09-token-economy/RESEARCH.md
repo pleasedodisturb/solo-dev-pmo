@@ -21,13 +21,15 @@ Out:
 
 Greenfield content. **Read these primary sources before drafting:**
 
-### User's repo (canonical reference, same-tier per author preference)
+### Existing practitioner research to cite
 
-| Repo | URL | Why it matters here |
+The user's awesome-list is **not a link directory to route around** — it is practitioner-curated research with its own stacked-pipeline derivation, source-class weighting, and cross-tool comparisons. The chapter CITES it as primary for the synthesis-level claims (stacked pipeline math, cross-tool selection, comprehensive scope) and reaches for vendor primary docs **in parallel** for the technical specifics that need a first-party source. Position as same-tier prior art alongside other awesome-lists in the alternatives tables.
+
+| Repo | URL | Existing research to draw from + cite |
 |---|---|---|
-| `pleasedodisturb/awesome-llm-token-optimization` | https://github.com/pleasedodisturb/awesome-llm-token-optimization | The reference catalog. ~14 sections covering caching, batch APIs, routing, compression, context, KV cache, browser tool efficiency, cost tracking, pricing comparison, prompt engineering for efficiency. Position as same-tier prior art alongside other awesome-lists; cite specific entries rather than the whole list. |
+| `pleasedodisturb/awesome-llm-token-optimization` | https://github.com/pleasedodisturb/awesome-llm-token-optimization | **Cite the README's "Combined pipeline: ... 95-99% cost reduction" as the canonical reference for the stacked-pipeline claim** (Q09.22). Cite the 14 sections as the practitioner-curated cross-tool survey for caching / batch / routing / compression / KV cache / observability. The chapter doesn't re-derive the catalog — it summarizes the load-bearing patterns and points there for the full survey. |
 
-### External primary docs (cite directly, don't rely on the awesome-list as intermediary)
+### External primary docs (cite in parallel — these are the technical sources of record)
 
 - **Anthropic** — prompt caching (docs.anthropic.com), token-efficient tool use, message batches, extended thinking + caching, cache-aware rate limits
 - **OpenAI** — prompt caching, batch API, batch FAQ, prompt-caching cookbook
@@ -55,6 +57,10 @@ Greenfield content. **Read these primary sources before drafting:**
 - **Solo dev ≠ enterprise.** Don't recommend LiteLLM proxy + Helicone + Langfuse triple-stack if a `tail -f` + a CSV will do.
 
 ## 3. Research questions
+
+### Synthesis (cite practitioner research directly)
+
+- **Q09.0** The "Combined pipeline: caching (90%) + routing (60–95%) + batch (50%) + compression (5–20x) + response cache (100% on repeats) = 95–99% reduction" derivation is published in `pleasedodisturb/awesome-llm-token-optimization`'s README "Quick Wins" section. Cite it as the canonical reference for this chapter's headline framing. Re-derive the math honestly in the chapter; if any single number is stale or doesn't hold under realistic conditions, surface — don't quietly soften.
 
 ### Caching
 
