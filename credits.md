@@ -160,8 +160,9 @@ These show up in chapters but aren't load-bearing:
 
 ## License
 
-[Pick at fork time.]
+Dual-licensed:
 
-Suggested:
-- **Prose / chapters** — Creative Commons BY 4.0. Attribution preserves "field-tested by [the author]" credit. Lets others remix/extend.
-- **Code examples / scripts** — MIT. Permissive; matches the patterns shipped in `gstack`, `solo-founder-playbook`, etc.
+- **Prose / chapters** — [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). Share, adapt, use commercially with attribution.
+- **Code examples / scripts** (anything in `examples/`, code blocks in chapters, the `cheats-starter/` directory under chapter 07, plists, shell hooks, Python scripts) — [MIT License](https://opensource.org/licenses/MIT). Permissive; matches the patterns shipped in `gstack`, `solo-founder-playbook`, etc.
+
+Full text + attribution guidance: [`LICENSE`](./LICENSE).
