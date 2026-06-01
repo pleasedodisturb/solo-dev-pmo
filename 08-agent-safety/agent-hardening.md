@@ -20,6 +20,19 @@ llm-safe-haven ships a five-level scorecard you can run in ~60 seconds (`npx llm
 
 **The solo-dev recommendation: target Tier 3.** (Argued at the bottom of this file.) Tier 4 is worth it for untrusted-code review and unattended runs — see [session-isolation](./session-isolation.md).
 
+### Is the "60-second hardening" reproducible on a fresh machine? (Q08.17)
+
+Yes, end-to-end, with one supply-chain caveat. On a clean box with Node and Claude Code installed:[¹]
+
+```bash
+npx llm-safe-haven --dry-run   # 1. preview the hooks + settings.json deltas, write nothing
+npx llm-safe-haven             # 2. detect agents, install the three hooks, wire settings.json
+npx llm-safe-haven audit       # 3. print the tier score (target: Tier 3)
+npx llm-safe-haven scan        # 4. find any exposed .env files to clean up
+```
+
+It detects the installed agent and writes hooks to `~/.claude/hooks/` + registers them in `settings.json`; `audit --json` gives a CI-checkable score. **The honest caveat:** `npx` runs an npm package's install path, so the "fresh machine" step inherits the supply-chain risk this very chapter warns about — pin the version, run `--dry-run` first, and verify per [Chapter 05 — supply-chain](../05-secrets-and-secure-defaults/supply-chain-2026.md) before trusting it on a machine with live credentials. Tiers 3–4 (credential proxy, container/network) are **not** part of the 60-second run — they need the `rbw-proxy` daemon and an isolation boundary, which are deliberate, not turnkey.
+
 ## Q08.5–Q08.7 — The three reference hooks
 
 These are llm-safe-haven's published reference implementation. The chapter discusses the *pattern*; the actual code lives in `hooks/` in the repo.[²]
