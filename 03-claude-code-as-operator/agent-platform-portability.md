@@ -65,7 +65,7 @@ Aider is the outlier: no MCP, no hooks, no subagents. It maps cleanly onto the *
 [²]: AGENTS.md native support is an open feature request for Claude Code; `CLAUDE.md` remains canonical (https://code.claude.com/docs/en/memory) — accessed 2026-05-31
 [³]: https://cursor.com/docs/rules — accessed 2026-05-31 (via search extraction; cursor.com 403s WebFetch)
 [⁴]: https://aider.chat/docs/usage/conventions.html — accessed 2026-05-31
-[⁵]: https://docs.cline.bot/prompting/cline-memory-bank — accessed 2026-05-31
+[⁵]: https://docs.cline.bot/features/memory-bank — accessed 2026-05-31
 [⁶]: https://docs.continue.dev/customize/deep-dives/rules — accessed 2026-05-31
 [⁷]: https://developers.openai.com/codex/subagents and /codex/concepts/sandboxing — accessed 2026-05-31
 [⁸]: https://cursor.com/docs/agent/hooks and https://www.infoq.com/news/2025/10/cursor-hooks/ — accessed 2026-05-31

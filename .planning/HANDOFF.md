@@ -6,7 +6,7 @@ A `gsd-phase-researcher` (or `gsd-discuss-phase` → `gsd-plan-phase` chain) pic
 
 Exactly one phase folder under `.planning/`. Identified by:
 
-- Phase ID: `P00`–`P07`
+- Phase ID: `P00`–`P08` (chapter 09 was authored but extracted to `extract/token-economy` branch)
 - Folder: `.planning/<NN>-<slug>/`
 - Brief: `.planning/<NN>-<slug>/RESEARCH.md`
 

@@ -88,7 +88,7 @@ These cover adjacent territory. We link to them rather than duplicating.
 
 Same-tier prior art for chapter 08 (Agent safety). Listed alongside external alternatives, not above them.
 
-- [`pleasedodisturb/llm-safe-haven`](https://github.com/pleasedodisturb/llm-safe-haven) — Published npm tool that hardens AI coding agents in 60 seconds. 4-tier security scorecard; ships `audit-logger.js` / `bash-firewall.js` / `secret-guard.js` hooks; supports Claude Code / Cursor / Windsurf / Cline / Continue / Aider / Codex CLI. Cited in [chapter 08 — agent-hardening](./08-agent-safety/agent-hardening.md).
+- [`pleasedodisturb/llm-safe-haven`](https://github.com/pleasedodisturb/llm-safe-haven) — Published npm tool that hardens AI coding agents in 60 seconds. 5-tier security scorecard (Tier 0 Exposed → Tier 4 Fortified); ships `audit-logger.js` / `bash-firewall.js` / `secret-guard.js` hooks; supports Claude Code / Cursor / Windsurf / Cline / Continue / Aider / Codex CLI. Cited in [chapter 08 — agent-hardening](./08-agent-safety/agent-hardening.md).
 - [`pleasedodisturb/terminal-craft`](https://github.com/pleasedodisturb/terminal-craft) — Ghostty + tmux + Claude Code workspace patterns. Session persistence + visual alerts + hook routing. Cited in [chapter 08 — session-isolation](./08-agent-safety/session-isolation.md). Note: tmux is session-shaped, not security-shaped — the chapter is explicit about that.
 - [`pleasedodisturb/rbw-proxy`](https://github.com/pleasedodisturb/rbw-proxy) — Credential proxy for AI coding agents sandboxed behind Seatbelt/bubblewrap (file-based IPC, per-project secret manifests, audit logging). Cited in [chapter 08 — session-isolation](./08-agent-safety/session-isolation.md) as the sandbox↔secrets intersection pattern.
 

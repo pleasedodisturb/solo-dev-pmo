@@ -49,7 +49,7 @@ Default to **flat-file, version-controlled** memory (Layers 1–3). Reach for **
 
 [¹]: https://cursor.com/docs/rules — accessed 2026-05-31
 [²]: https://aider.chat/docs/usage/conventions.html — accessed 2026-05-31
-[³]: https://docs.cline.bot/prompting/cline-memory-bank — accessed 2026-05-31
+[³]: https://docs.cline.bot/features/memory-bank — accessed 2026-05-31
 [⁴]: https://docs.continue.dev/customize/deep-dives/rules — accessed 2026-05-31
 [⁵]: https://docs.mem0.ai/platform/overview ; https://github.com/mem0ai/mem0 — accessed 2026-05-31
 [⁶]: https://docs.letta.com/concepts/letta/ — accessed 2026-05-31
