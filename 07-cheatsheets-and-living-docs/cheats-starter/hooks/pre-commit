@@ -7,7 +7,9 @@ changed=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\-cheatshee
 while IFS= read -r f; do
   [ -f "$f" ] || continue
   if grep -q 'last-validated:' "$f"; then
-    sed -i -E "s/last-validated: [0-9]{4}-[0-9]{2}-[0-9]{2}/last-validated: ${today}/" "$f"
+    # Portable in-place edit: BSD sed (macOS) wants `-i ''`, GNU sed (Linux) wants
+    # bare `-i`. perl -pi -e behaves identically on both.
+    perl -pi -e "s/last-validated: [0-9]{4}-[0-9]{2}-[0-9]{2}/last-validated: ${today}/" "$f"
   fi
   git add "$f"
 done <<< "$changed"
