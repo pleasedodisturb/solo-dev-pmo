@@ -15,7 +15,6 @@ Eight phases, one per chapter. Each phase is independent — they can be picked 
 | P06 | [`06-session-discipline/`](./06-session-discipline/) | [RESEARCH.md](./06-session-discipline/RESEARCH.md) | gsd-phase-researcher |
 | P07 | [`07-cheatsheets-and-living-docs/`](./07-cheatsheets-and-living-docs/) | [RESEARCH.md](./07-cheatsheets-and-living-docs/RESEARCH.md) | gsd-phase-researcher |
 | P08 | [`08-agent-safety/`](./08-agent-safety/) | [RESEARCH.md](./08-agent-safety/RESEARCH.md) | gsd-phase-researcher (greenfield — creates new chapter) |
-| P09 | [`09-token-economy/`](./09-token-economy/) | [RESEARCH.md](./09-token-economy/RESEARCH.md) | gsd-phase-researcher (greenfield — creates new chapter) |
 
 ## Shared assets
 

@@ -47,7 +47,6 @@ If those don't describe you, this probably isn't for you.
 | 06 | [Session discipline](./06-session-discipline/) | ✓ | Commit cadence, PR review standard, audit + conventions pattern, /wrap and /resume |
 | 07 | [Cheatsheets and living docs](./07-cheatsheets-and-living-docs/) | ✓ | `cheat <topic>` system, cheatsheet maintenance discipline |
 | 08 | [Agent safety](./08-agent-safety/) | ✓ | Threat model (OWASP LLM/Agentic + lethal trifecta), agent hardening (audit/firewall/secret-guard + credential proxy), session isolation (tmux ≠ sandbox, Seatbelt/bubblewrap, containers/VM, cloud-session sandbox) |
-| 09 | [Token economy](./09-token-economy/) | ✓ | Caching + batch (vendor matrices + cached-prefix pattern), model routing (tier-the-workload + eval gate), prompt compression (LLMLingua + context discipline), cost tracking (budgets-are-alerts gotcha); honest stacked-pipeline envelope ≈95% on the cached+batched slice, floor ~50% for unique/urgent/terse traffic |
 
 Every chapter is substantive (README + sub-topics + field-tested gotchas + innovative patterns). Open issues / PRs welcome for new chapters or depth-expansion of existing ones.
 
