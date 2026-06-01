@@ -65,7 +65,7 @@ These cover adjacent territory. We link to them rather than duplicating.
 
 ### Solo dev / opinionated stack
 
-- [`garrytan/gstack`](https://github.com/garrytan/gstack) — Claude Code as software factory; 65+ skills + GBrain memory. Covers Claude Code skill organization deeply; this playbook covers the PM / filesystem / ritual layers gstack doesn't.
+- [`garrytan/gstack`](https://github.com/garrytan/gstack) — Claude Code as software factory; ~31 core skills (the "65+" figure circulates from earlier marketing) + GBrain memory. Covers Claude Code skill organization deeply; this playbook covers the PM / filesystem / ritual layers gstack doesn't.
 - [`yayashuxue/solo-founder-playbook`](https://github.com/yayashuxue/solo-founder-playbook) — Founder business strategy via 6 Claude Code skills (idea evaluation, growth, plan roasting). Pure business layer; this playbook is the engineering layer.
 - [`nopara73/ForeverAloneProgramming`](https://github.com/nopara73/ForeverAloneProgramming) — Software development methodology (Agile Unified Process variant) for solo devs. Methodology-flavored; this playbook is stack-integrated.
 - [`fawazahmed0/the-solo-developers-manifesto`](https://github.com/fawazahmed0/the-solo-developers-manifesto) — Manifesto-style guidance.

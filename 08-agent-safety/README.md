@@ -17,6 +17,7 @@ Instructions and data share one channel: a fetched page, an issue body, or a dep
 | [threat-model](./threat-model.md) | The 10 failure modes, OWASP LLM-Top-10 + Agentic mappings, the threat×layer matrix, honest prompt-injection state. |
 | [agent-hardening](./agent-hardening.md) | The 5-tier scorecard, the three reference hooks, native Claude Code controls, the agent-credential proxy, permission design, cross-tool posture. |
 | [session-isolation](./session-isolation.md) | Persistence ≠ security; tmux as workspace; Seatbelt/bubblewrap; container/VM ladder; cloud sessions; worktree-as-soft-sandbox. |
+| [sources.md](./sources.md) | Bibliography by source class (practitioner repos · vendor docs · safety frameworks · academic · community) + verification notes. |
 
 ## Recommended reading order
 

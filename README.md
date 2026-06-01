@@ -24,7 +24,7 @@ If those don't describe you, this probably isn't for you.
 
 - **Not an awesome-list of links.** Adjacent prior art (see [`credits.md`](./credits.md)) covers that well — `awesome-claude-code`, `awesome-adhd`, `gstack`, `solo-founder-playbook`. We point at them and don't duplicate them.
 - **Not a founder/startup playbook.** Business strategy (idea evaluation, growth, monetization) is covered by `yayashuxue/solo-founder-playbook` and we link there. This is about the engineering-org layer underneath.
-- **Not a Claude Code skill bundle.** `garrytan/gstack` ships 65+ skills; this ships zero. We describe *how to think about* skills/hooks/MCPs, not which specific ones to install.
+- **Not a Claude Code skill bundle.** `garrytan/gstack` ships ~31 core skills (the "65+" figure circulates from earlier marketing; current docs show the smaller number); this ships zero. We describe *how to think about* skills/hooks/MCPs, not which specific ones to install.
 - **Not theoretical.** Every chapter is extracted from a working system that one engineer runs day-to-day for 12+ months. Provenance is tracked in [`extraction-sheet.md`](./extraction-sheet.md).
 
 ## Quickstart
@@ -54,7 +54,7 @@ Every chapter is substantive (README + sub-topics + field-tested gotchas + innov
 
 The closest adjacent repos:
 
-- **[`garrytan/gstack`](https://github.com/garrytan/gstack)** — Claude Code as a software factory. 65+ skills, GBrain memory layer. Zero PM tool integration, no ADHD framing, no cross-tool/filesystem conventions. *We are complementary, not competing — this playbook teaches the org layer that gstack assumes you already have.*
+- **[`garrytan/gstack`](https://github.com/garrytan/gstack)** — Claude Code as a software factory. ~31 core skills (the often-quoted "65+" predates a 2026 consolidation), GBrain memory layer. Zero PM tool integration, no ADHD framing, no cross-tool/filesystem conventions. *We are complementary, not competing — this playbook teaches the org layer that gstack assumes you already have.*
 - **[`yayashuxue/solo-founder-playbook`](https://github.com/yayashuxue/solo-founder-playbook)** — Six Claude Code skills for founder strategy (idea evaluation, growth, plan roasting). Zero engineering workflow. *Different layer; we don't overlap.*
 - **[`hesreallyhim/awesome-claude-code`](https://github.com/hesreallyhim/awesome-claude-code)** — Directory of Claude Code skills, hooks, slash-commands, plugins. *That's the marketplace; this is the recipe book.*
 - **[`XargsUK/awesome-adhd`](https://github.com/XargsUK/awesome-adhd)** — General ADHD apps, books, content. No dev/PM content. *Different audience; we link to it for the lifestyle layer.*
