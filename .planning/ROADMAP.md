@@ -1,6 +1,6 @@
 # ROADMAP — Milestone M1: Depth via grounded research
 
-Eight phases, one per chapter. Each phase is independent — they can be picked up in parallel by separate `gsd-phase-researcher` agents.
+Nine phases (P00–P08), one per chapter on `main`. P09 (Token economy) was authored in this milestone but extracted to `extract/token-economy` branch for later move to a dedicated repo. Phases were independent and ran in parallel via separate cloud `gsd-phase-researcher` sessions.
 
 ## Phase index
 

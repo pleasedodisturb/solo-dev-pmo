@@ -244,7 +244,7 @@ External claims gathered via web search 2026-05-31 (vendor doc domains block aut
 - [1]: AGENTS.md — https://agents.md/ — accessed 2026-05-31
 - [2]: Anthropic, *Best practices for Claude Code* — https://code.claude.com/docs/en/best-practices — accessed 2026-05-31
 - [3]: Cognition, *Creating Playbooks (Devin)* — https://docs.devin.ai/product-guides/creating-playbooks — accessed 2026-05-31
-- [4]: Cursor *Rules* https://cursor.com/docs/rules ; Cline *Memory Bank* https://docs.cline.bot/prompting/cline-memory-bank ; Aider *Conventions* https://aider.chat/docs/usage/conventions.html — accessed 2026-05-31
+- [4]: Cursor *Rules* https://cursor.com/docs/rules ; Cline *Memory Bank* https://docs.cline.bot/features/memory-bank ; Aider *Conventions* https://aider.chat/docs/usage/conventions.html — accessed 2026-05-31
 - [5]: Sweep docs — https://docs.sweep.dev/ — accessed 2026-05-31
 - [6]: Augment Code, *AI Spec Template* — https://www.augmentcode.com/guides/ai-spec-template ; CodeRabbit, *The hidden cost of AI coding agents* — https://www.coderabbit.ai/blog/the-hidden-cost-of-ai-coding-agents-isnt-from-ai-at-all — accessed 2026-05-31
 

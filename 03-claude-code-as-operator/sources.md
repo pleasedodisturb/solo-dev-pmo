@@ -24,7 +24,7 @@ Bibliography for the P03 research enrichment. All sources accessed **2026-05-31*
 - Cursor rules / hooks — https://cursor.com/docs/rules · https://cursor.com/docs/agent/hooks
 - OpenAI Codex (subagents, sandboxing, AGENTS.md) — https://developers.openai.com/codex/subagents
 - Aider conventions — https://aider.chat/docs/usage/conventions.html
-- Cline Memory Bank — https://docs.cline.bot/prompting/cline-memory-bank
+- Cline Memory Bank — https://docs.cline.bot/features/memory-bank
 - Continue rules — https://docs.continue.dev/customize/deep-dives/rules
 - AGENTS.md standard — https://agents.md/
 - Linear MCP (official) — https://linear.app/docs/mcp · https://linear.app/changelog/2025-05-01-mcp

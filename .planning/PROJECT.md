@@ -4,7 +4,7 @@
 
 A published playbook (this repo) describing the PMO function — coordination, conventions, rituals, audit trail — sized for a solo developer working with N AI agents in the loop. Live at https://github.com/pleasedodisturb/solo-dev-pmo.
 
-Eight chapters (00–07), each currently a working README + 3–6 sub-topic files extracted from one solo developer's 12-month working setup. All chapters have substantive content; the goal of this milestone is **depth + breadth via research**, not first-pass authoring.
+Nine chapters (00–08) on `main`, each a working README + 3–6 sub-topic files extracted from one solo developer's 12-month working setup. Chapter 09 (Token economy) was authored in this milestone but extracted to `extract/token-economy` branch for later move to a dedicated repo. Milestone M1 (depth + breadth via grounded research) is **shipped**: all chapter PRs merged 2026-05-31 → 2026-06-01.
 
 ## Audience
 
@@ -36,9 +36,9 @@ Explicitly NOT for: enterprise teams, AI-skeptics, people looking for a links li
 
 Full source list: [`credits.md`](../credits.md).
 
-## Current milestone
+## Completed milestone (M1)
 
-**M1 — Depth via grounded research.** Every chapter currently leans heavily on the author's primary source material (global agent instructions + auto-memory + audit log + conventions). This milestone re-grounds each chapter against external primary sources (vendor docs, peer-reviewed work where relevant, adjacent repos, and current 2025–2026 community practice) and adds:
+**M1 — Depth via grounded research. SHIPPED 2026-06-01.** Every chapter currently leans heavily on the author's primary source material (global agent instructions + auto-memory + audit log + conventions). This milestone re-grounds each chapter against external primary sources (vendor docs, peer-reviewed work where relevant, adjacent repos, and current 2025–2026 community practice) and adds:
 
 - An honest "alternatives" table per chapter (what we picked, what we rejected, why)
 - A "field tests beyond the author" subsection (other practitioners' confirmations / counter-evidence)

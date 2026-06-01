@@ -63,7 +63,7 @@ Primary docs ★★★★★ · vendor blog ★★★★ · academic ★★★�
 - AGENTS.md — https://agents.md/ — primary ★★★★
 - Anthropic, *Best practices for Claude Code* — https://code.claude.com/docs/en/best-practices — primary ★★★★★
 - Cognition, *Creating Playbooks (Devin)* — https://docs.devin.ai/product-guides/creating-playbooks — primary ★★★★
-- Cursor *Rules* https://cursor.com/docs/rules · Cline *Memory Bank* https://docs.cline.bot/prompting/cline-memory-bank · Aider *Conventions* https://aider.chat/docs/usage/conventions.html — primary ★★★★
+- Cursor *Rules* https://cursor.com/docs/rules · Cline *Memory Bank* https://docs.cline.bot/features/memory-bank · Aider *Conventions* https://aider.chat/docs/usage/conventions.html — primary ★★★★
 - Sweep docs — https://docs.sweep.dev/ — primary ★★★★
 - Augment Code, *AI Spec Template* — https://www.augmentcode.com/guides/ai-spec-template — practitioner ★★★
 - CodeRabbit, *The hidden cost of AI coding agents* — https://www.coderabbit.ai/blog/the-hidden-cost-of-ai-coding-agents-isnt-from-ai-at-all — vendor blog ★★★
