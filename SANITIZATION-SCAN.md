@@ -1,5 +1,7 @@
 # Sanitization scan — run BEFORE publishing your fork
 
+> **This doc is for forkers.** The original `solo-dev-pmo` repo has already passed this scan — the placeholders below (`<your-username>`, `<repo>`, etc.) are *patterns* to grep, not active concerns in the published source. Keep this file in your fork; run it as a checklist before every public push.
+
 If you fork this playbook and adapt it to your own setup, you'll eventually have *your* personal identifiers (workspace name, project names, ticket IDs, ntfy topic, hardware specifics) baked into your fork. Before pushing to a public repo, run this scan.
 
 Generic recipes. Replace `<placeholder>` patterns with your own real values for the grep — then verify zero matches.

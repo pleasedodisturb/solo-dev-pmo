@@ -74,7 +74,13 @@ Every external claim you add to the chapter cites a source per the SEARCH-PLAYBO
 - Terse. No marketing copy. No "in conclusion" or "let's dive into."
 - Tables for comparisons. Numbered lists for procedures.
 - Code blocks must be copy-paste-runnable on a fresh machine (or labeled `pseudo-code` clearly).
-- Caps: ≤ 250 lines per sub-topic file. README stays ≤ 100 lines.
+- Caps: ≤ 250 lines per sub-topic file. Chapter README stays ≤ 100 lines. **Documented overage exceptions** (load-bearing content judged worth the breach at merge time; do not regress, do not extend):
+  - `01-linear-as-load-bearing-pm/io-rules.md` ≤ 310 — 2026 API refresh + AI-features section
+  - `01-linear-as-load-bearing-pm/ticket-standard.md` ≤ 270 — 7-section schema inlined + failure case
+  - `03-claude-code-as-operator/memory-architecture.md` ≤ 310 — field-tested gotchas + vendor evidence
+  - `01-linear-as-load-bearing-pm/README.md` ≤ 120 — showcase chapter
+  - `05-secrets-and-secure-defaults/README.md` ≤ 120 — milestone DoD subsections live there
+  - Other files exceeding the cap = surface per stop conditions, don't silently breach.
 - Cross-references between chapters use the form: `[Chapter 03 — Memory architecture](../03-claude-code-as-operator/memory-architecture.md)`.
 - No emojis. No screenshots (markdown only; asciinema/SVG OK if absolutely needed).
 
