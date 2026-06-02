@@ -122,14 +122,87 @@ Correct interaction order:
 
 Recovery if PIN-locked: removing + re-inserting the key resets the per-session counter, so you get fresh attempts. If you exhaust all 8 lifetime tries → `ykman fido reset` is the only fix and **it wipes every FIDO credential on the key** (passkeys + resident SSH keys included).
 
+### Agent compatibility (the FIDO dead end)
+
+`rbw-ssh-agent` — the agent this chapter recommends for daily software keys — **does not accept FIDO keys.** `ssh-add ~/.ssh/id_ed25519_sk` returns `Could not add identity: agent refused operation`. This isn't a rbw-ssh-agent bug; it's by design — rbw is a vault for software keys, FIDO key material lives on the hardware token and doesn't fit that model.
+
+That means FIDO keys live **outside the unified-agent pattern** the rest of this chapter recommends. Two paths:
+
+1. **Agent-less** — the production-design intent for hardware-backed keys: touch on every operation, no caching, no agent-compromise blast radius. Documented below.
+2. **Side-channel agent** — Homebrew's stock `ssh-agent` started in a subshell or as a separate launchd job, with its own `SSH_AUTH_SOCK` you switch to when using the FIDO key. More plumbing, less touch-friction. Worth it only if you sign 20+ commits a day with the FIDO key; for the "twice-a-day deploy" use case, agent-less wins.
+
+### Use the key without an agent (the production pattern)
+
+Yubico treats the agent as optional in their `-sk` documentation — touch-per-operation IS the intent. Two integration points:
+
+**Pattern 1 — SSH auth via `~/.ssh/config` `IdentityFile`:**
+
+```sshconfig
+# Default: software key (rbw-served) for daily git, sshing around
+Host *
+  IdentityFile ~/.ssh/id_ed25519
+  IdentitiesOnly yes
+
+# High-stakes: FIDO key, no agent, touch every time
+Host github-prod prod-deploy
+  HostName github.com
+  IdentityFile ~/.ssh/id_ed25519_sk
+  IdentitiesOnly yes
+  AddKeysToAgent no
+```
+
+Use the high-stakes host alias only for the operations you want to gate on touch:
+
+```bash
+git remote set-url origin git@github-prod:user/<repo>.git
+# or one-off:
+ssh github-prod   # PIN + touch
+```
+
+**Pattern 2 — Git signing via file path (no agent, no rbw):**
+
+```bash
+# Global: every commit signed with the FIDO key (maximally strict)
+git config --global gpg.format ssh
+git config --global user.signingkey ~/.ssh/id_ed25519_sk.pub
+git config --global commit.gpgsign true
+
+# OR per-repo: only sign with FIDO in high-stakes repos
+cd ~/Projects/<high-stakes-repo>
+git config gpg.format ssh
+git config user.signingkey ~/.ssh/id_ed25519_sk.pub
+git config commit.gpgsign true
+```
+
+`user.signingkey` here is the **`.pub` file path** — git reads the file directly, no agent involved. Each `git commit` prompts for PIN + touch. Verify with `git verify-commit HEAD` after your first signed commit; expect `Good "git" signature with ED25519-SK key`.
+
+This is the pattern that closes the chapter's recipe: generate the key → register the `.pub` with GitHub (Authentication and/or Signing key) → wire either Pattern 1 or Pattern 2 (or both) into `~/.ssh/config` and `git config`. The agent step is **omitted on purpose**.
+
+### Cleanup + slot management
+
+YubiKey 5 has ~25 FIDO resident-credential slots. `ykman` lists + deletes:
+
+```bash
+ykman fido credentials list      # PIN-prompts once; lists all resident
+                                 # credentials (RP, user, credential ID)
+ykman fido credentials delete <credential-id>   # frees the slot
+```
+
+Disk-side handle and YubiKey-side credential are separate:
+
+- Delete just the disk handle → key unusable from this machine, but credential stays on YubiKey (rehydrate later via `ssh-keygen -K`)
+- Delete just the YubiKey credential → handle on disk becomes inert
+- Wipe both for clean removal: `trash ~/.ssh/<key>{,.pub}` + `ykman fido credentials delete <id>`
+
+To re-download resident-credential stubs on a fresh machine: `ssh-keygen -K` writes them into the current directory.
+
 ### Notes
 
 - `-O verify-required` adds a PIN on top of the mandatory physical touch.
 - The private key material never leaves the YubiKey; only a non-secret handle is on disk.
-- **Rehydrate on a new machine:** `ssh-keygen -K` downloads resident-key stubs from the inserted YubiKey into the current directory.
 - Add the `.pub` to GitHub (Authentication and/or Signing key).
 - **Use sparingly.** Every operation needs a physical touch — fine for a deploy you do twice a day, miserable for a script doing 100 git operations. Daily keys stay software (`rbw`).
-- **Verified 2026-06-02** on macOS Sequoia + YubiKey 5C NFC firmware 5.2.7 (Homebrew openssh 10.3p1 + libfido2). The FIDO-provider gap and PIN foot-gun were caught during this verification — see [`.planning/audits/2026-06-02-deferred-verify-followup.md`](../.planning/audits/2026-06-02-deferred-verify-followup.md) for the full session.
+- **Verified 2026-06-02** on macOS Sequoia + YubiKey 5C NFC firmware 5.2.7 (Homebrew openssh 10.3p1 + libfido2). The FIDO-provider gap, PIN foot-gun, and rbw-ssh-agent FIDO-incompatibility were all caught during this verification — see [`.planning/audits/2026-06-02-deferred-verify-followup.md`](../.planning/audits/2026-06-02-deferred-verify-followup.md) for the full session.
 
 ## Git signing via SSH key
 
