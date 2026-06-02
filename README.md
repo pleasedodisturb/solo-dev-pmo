@@ -43,6 +43,8 @@ Over weeks (not days) of adoption, you'll have:
 
 ## Chapters
 
+> **Orientation — Claude Code-first, not Claude Code-only.** The **examples use Claude Code** because that's where the author runs production. The *patterns* translate to any agentic coding tool (Cursor, Codex, Aider, Cline, Continue); the *specific recipes* (skills, hooks, `/commands`) don't port without rewriting. Chapter 03 § [`agent-platform-portability.md`](./03-claude-code-as-operator/agent-platform-portability.md) is the translation matrix.
+
 | # | Chapter | Status | What it covers |
 |---|---------|--------|----------------|
 | 00 | [Principles](./00-principles/) | ✓ | ADHD-aware design, 4-layer memory, single source of truth, calendar-neutrality |

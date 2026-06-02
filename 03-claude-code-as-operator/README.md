@@ -2,7 +2,9 @@
 
 > Claude Code (or any agentic coding tool — Cursor, Codex, Windsurf, Aider) is not a chat window. It's an operator on your stack. Design the stack so it can operate well.
 
-This chapter is about the integration layer. How memory works. What goes in CLAUDE.md vs. auto-memory. Which MCP for which task. When to spawn an agent vs. inline. Browser tool routing. The patterns hold for any agentic coding tool, but examples use Claude Code because that's where the author runs production.
+> **Claude Code-first, not Claude Code-only.** Examples use Claude Code because that's where the author runs production. The patterns port to any operator agent — but the concrete recipes (skills, hooks, `/commands`, MCP wiring) need rewriting per tool. The [portability section below](#not-just-claude-code) and [Agent-platform portability](./agent-platform-portability.md) are the translation matrix.
+
+This chapter is about the integration layer. How memory works. What goes in CLAUDE.md vs. auto-memory. Which MCP for which task. When to spawn an agent vs. inline. Browser tool routing.
 
 > **Checked against Claude Code v2.1.158, 2026-05-31.** Docs now live at **code.claude.com/docs** (moved from `docs.claude.com/en/docs/claude-code`). Fast-moving deltas since first draft: the `Task` tool is now `Agent`; **plugins** bundle skills/hooks/MCP behind marketplaces; custom commands merged into **skills**; hook events grew from ~5 to ~30; **MCP Tool Search** defers tool definitions. Each is covered in the relevant sub-topic, not silently rewritten.
 
