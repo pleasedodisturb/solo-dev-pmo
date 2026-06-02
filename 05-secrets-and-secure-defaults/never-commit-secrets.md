@@ -21,6 +21,12 @@ The cultural layer fails first. The others exist because it does.
 
 This `.pre-commit-config.yaml` is copy-paste-runnable. **You run it locally** — it can't be exercised in a cloud session.
 
+> **Prerequisites.** The recipe assumes `pre-commit` is already on your PATH. On a fresh Mac it isn't — install it *first*, or `git commit` fails with `pre-commit: command not found` and first-time forkers bounce:
+>
+> ```bash
+> pipx install pre-commit detect-secrets    # or: brew install pre-commit detect-secrets
+> ```
+
 ```yaml
 # .pre-commit-config.yaml — active after `pre-commit install`
 repos:
@@ -36,7 +42,6 @@ repos:
 ```
 
 ```bash
-pipx install pre-commit detect-secrets    # or brew/uvx
 detect-secrets scan > .secrets.baseline   # allowlist of known safe-looking strings
 git add .secrets.baseline
 pre-commit install                        # wire into git commit

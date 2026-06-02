@@ -62,6 +62,8 @@ git commit --allow-empty -m "test sig"   # should succeed
 git log --show-signature -1              # should verify
 ```
 
+> **Seeing `No principal matched`?** Your signature is still valid — `git log --show-signature` found a Good signature but couldn't match your key to a named identity in `~/.ssh/allowed_signers`. To bind it (and silence the line): add `your-email@example.com ssh-ed25519 AAAA...` to `~/.ssh/allowed_signers`, then `git config --global gpg.ssh.allowedSignersFile ~/.ssh/allowed_signers`.
+
 ## Forge verification matrix
 
 All four verify SSH-signed commits, given Git ≥ 2.34 on the signer's side. What differs is setup:
