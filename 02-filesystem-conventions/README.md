@@ -36,6 +36,16 @@ To live in this chapter, you commit to:
 
 When you adopt this, the disk becomes scriptable. Repo-sync-tool tooling, project pickers, and Claude Code's launcher all derive everything from these four rules.
 
+## A related convention: gate what you install
+
+Disk layout keeps the *repos* scriptable; a parallel habit keeps the *environment* low-surface. This playbook leans on Homebrew freely — but `brew install` should be a decision, not a reflex:
+
+- **Prefer the bundled tool when it's genuinely equivalent.** macOS already ships `jq` (`/usr/bin/jq`), `git`, `curl`, and `ssh` — don't brew what's already there and working.
+- **Reach for brew when the bundled tool falls short.** macOS's `ssh-keygen` isn't linked against libfido2, so hardware-key flows *need* Homebrew's OpenSSH (see [chapter 05](../05-secrets-and-secure-defaults/ssh-agent-via-rbw.md)). That's a real reason; "I always brew it" isn't.
+- **Gate every new *security* tool with a one-line why.** A scanner or credential helper widens your trust surface — justify it at the point you add it, the way chapter 05 does.
+
+It's a habit, not a manifest to maintain — a pinned dependency table would just rot as macOS and Homebrew ship. The per-tool reasoning behind this lives in [`docs/scoping/brew-vs-native-recommendation.md`](../docs/scoping/brew-vs-native-recommendation.md).
+
 ## Why "conventions" instead of "structure"
 
 Convention files (`conventions/naming.md`, `conventions/states.md`) are durable rules edited in-place. They have no date prefix. They're versioned via git so changes are visible, but they're the always-current source of truth.
