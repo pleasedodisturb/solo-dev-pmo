@@ -83,6 +83,26 @@ Fixes by case: **unset** → re-source `~/.zshrc`. **stale path** → the agent 
 
 For the keys whose compromise would be catastrophic — prod deploy, release signing, the key that can push to `main` of your money-maker — back the key with a YubiKey. Requires YubiKey firmware ≥ 5.2.3 (FIDO2) and OpenSSH ≥ 8.2.[⁴]
 
+### Prerequisites (macOS)
+
+Apple's bundled `/usr/bin/ssh-keygen` is **not linked against libfido2** and silently fails with `No FIDO SecurityKeyProvider specified / Key enrollment failed: invalid format`. Install Homebrew's OpenSSH (which IS linked) plus the dylib + manager:
+
+```bash
+brew install libfido2 openssh ykman
+```
+
+Then either put `/opt/homebrew/bin` ahead of `/usr/bin` in `$PATH`, or call the binary explicitly: `/opt/homebrew/bin/ssh-keygen …`. `ykman` is what lets you list and delete resident FIDO credentials so you can free YubiKey slots without a factory reset (`ykman fido credentials list` / `ykman fido credentials delete <id>`).
+
+Sanity check before running the recipe:
+
+```bash
+which ssh-keygen                  # expect /opt/homebrew/bin/ssh-keygen
+ls /opt/homebrew/lib/libfido2.dylib   # exists
+ykman list                        # YubiKey detected, firmware ≥ 5.2.3
+```
+
+### Generate the key
+
 ```bash
 # Non-resident: a small key handle lives on disk; signing needs the YubiKey + touch.
 ssh-keygen -t ed25519-sk -O verify-required -C "deploy@prod"
@@ -91,11 +111,25 @@ ssh-keygen -t ed25519-sk -O verify-required -C "deploy@prod"
 ssh-keygen -t ed25519-sk -O resident -O verify-required -C "deploy@prod"
 ```
 
+### ⚠️ OTP-into-PIN foot-gun (lifetime PIN attempt budget)
+
+When ssh-keygen prompts `Enter PIN for authenticator:`, **type your PIN — DO NOT touch the YubiKey yet.** Touching the key while focus is in the PIN prompt outputs the YubiKey's 44-character OTP (a long string starting `cccccc…`) which gets typed as the PIN attempt. The FIDO PIN budget is **8 lifetime wrong attempts** before the FIDO function locks; two accidental OTP-touches can burn most of it.
+
+Correct interaction order:
+
+1. Prompt: `Enter PIN for authenticator:` → **type the PIN** (default for a brand-new YubiKey is no PIN — just Enter)
+2. After PIN accepted: `You may need to touch your authenticator` → **NOW touch the key**
+
+Recovery if PIN-locked: removing + re-inserting the key resets the per-session counter, so you get fresh attempts. If you exhaust all 8 lifetime tries → `ykman fido reset` is the only fix and **it wipes every FIDO credential on the key** (passkeys + resident SSH keys included).
+
+### Notes
+
 - `-O verify-required` adds a PIN on top of the mandatory physical touch.
 - The private key material never leaves the YubiKey; only a non-secret handle is on disk.
 - **Rehydrate on a new machine:** `ssh-keygen -K` downloads resident-key stubs from the inserted YubiKey into the current directory.
 - Add the `.pub` to GitHub (Authentication and/or Signing key).
-- **Use sparingly.** Every operation needs a physical touch — fine for a deploy you do twice a day, miserable for a script doing 100 git operations. Daily keys stay software (`rbw`). **TESTED LOCALLY ON: ____ (fill in).**
+- **Use sparingly.** Every operation needs a physical touch — fine for a deploy you do twice a day, miserable for a script doing 100 git operations. Daily keys stay software (`rbw`).
+- **Verified 2026-06-02** on macOS Sequoia + YubiKey 5C NFC firmware 5.2.7 (Homebrew openssh 10.3p1 + libfido2). The FIDO-provider gap and PIN foot-gun were caught during this verification — see [`.planning/audits/2026-06-02-deferred-verify-followup.md`](../.planning/audits/2026-06-02-deferred-verify-followup.md) for the full session.
 
 ## Git signing via SSH key
 
